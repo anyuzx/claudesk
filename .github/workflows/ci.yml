@@ -1,0 +1,68 @@
+name: Source install and tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  source-install:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      CLAUDESK_CODEX_SMOKE: '0'
+      HF_HUB_OFFLINE: '1'
+      TRANSFORMERS_OFFLINE: '1'
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v7
+        with:
+          python-version: '3.12'
+          cache: pip
+          cache-dependency-path: requirements.lock
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - name: Install the locked Python environment and source package
+        run: |
+          python -m pip install --require-hashes -r requirements.lock
+          python -m pip install --no-deps --no-build-isolation -e .
+          python -m pip check
+      - name: Install and build the frontend
+        working-directory: frontend
+        run: |
+          npm ci
+          npm run build
+      - name: Frontend unit tests
+        working-directory: frontend
+        run: npm run test
+      - name: Backend and fresh-vault API tests
+        env:
+          CLAUDESK_DATA_DIR: ${{ runner.temp }}/claudesk-ci-vault
+          CLAUDESK_LOCAL_CONFIG: ${{ runner.temp }}/claudesk-ci-local.yaml
+        run: >-
+          python -m unittest -q
+          tests.test_api_frontend_static
+          tests.test_backend_architecture tests.test_lazy_imports
+          tests.test_process_jobs tests.test_api_digest_process
+          tests.test_api_settings_rubric_process tests.test_agent_capabilities
+          tests.test_chat_sessions tests.test_chat_backends
+          tests.test_agent_web_tools tests.test_biorxiv_source tests.test_pubmed_source
+          tests.test_openalex_and_settings tests.test_paper_journal_metadata
+          tests.test_projects tests.test_project_milestones tests.test_settings_registry
+          tests.test_notes tests.test_paper_doi_deduplication tests.test_paper_doi_ingestion
+          tests.test_doi_normalization tests.test_paper_delete tests.test_tasks
+          tests.test_paper_assets tests.test_pdf_ingest tests.test_agent_pdf_tools
+          tests.test_release_version

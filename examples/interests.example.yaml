@@ -1,0 +1,131 @@
+# claudesk interests configuration
+# Optional: copy to the settings path reported by `claudesk vault show`
+# only if no config exists, then fill in your values and restart Claudesk.
+# The default data/ vault is gitignored. A synced vault shares this config;
+# keep credentials in the server environment rather than this file.
+
+profile:
+  name: "Your Name"
+  field:
+    - "Biophysics"
+    - "Chromatin biology"
+  description: |
+    Describe your current research focus in 2–4 sentences. This is fed
+    directly to the LLM ranker, so be specific: mention the systems you
+    study, the techniques you use, and the open questions you care about.
+    Example: "I study the mechanics of chromatin compaction using optical
+    tweezers and AFM. I am interested in how histone modifications regulate
+    force-dependent transitions in nucleosome arrays."
+
+# Free-text topics used for embedding similarity search.
+# Each entry is embedded and compared against incoming paper abstracts.
+topics:
+  - "single-molecule force spectroscopy"
+  - "protein folding and conformational dynamics"
+  - "molecular motors and cytoskeleton"
+  - "membrane biophysics and lipid bilayers"
+  - "chromatin mechanics and nucleosome positioning"
+
+# Hard keyword filter applied before embedding.
+# A paper must match at least one include term (case-insensitive, substring).
+# Papers matching any exclude term are dropped regardless of include matches.
+keywords:
+  include:
+    - "biophysics"
+    - "single molecule"
+    - "optical tweezers"
+    - "atomic force microscopy"
+    - "molecular dynamics"
+    - "protein folding"
+  exclude:
+    - "clinical trial"
+    - "epidemiology"
+    - "meta-analysis"
+    - "genome-wide association"
+
+# Tracked authors: papers from these people are always included,
+# even if they don't match the keyword filter.
+# Case-insensitive substring match — use just a last name for broadest
+# coverage ("Lipfert" matches "Jan Lipfert", "Lipfert J", etc.), or a
+# full name to be specific ("Jan Lipfert").
+tracked_authors: []
+#  - "Lipfert"
+#  - "Carlos Bustamante"
+
+# Seed papers: exemplars of what you want in your digest.
+# This config shape is reserved for future ranking support. Current ranking
+# ignores seed_papers and uses the free-text topics above instead.
+# Use arXiv IDs (e.g. "2301.12345") or full DOIs when the feature is wired.
+seed_papers:
+  - id: "10.1038/s41594-020-0446-0"
+    source: "doi"
+    note: "replace with a paper you love"
+
+# Source configuration
+sources:
+  arxiv:
+    enabled: true
+    # The Settings page suggests known arXiv categories but allows custom values.
+    categories:
+      - "q-bio.BM"        # Biomolecules
+      - "q-bio.SC"        # Subcellular Processes
+      - "cond-mat.soft"   # Soft Condensed Matter
+      - "physics.bio-ph"  # Biological Physics
+  biorxiv:
+    enabled: true
+    # Primary provider can be "api" (direct api.biorxiv.org) or "crossref".
+    # Crossref remains useful as a backup if the direct API is unavailable.
+    provider: api
+    fallback_provider: crossref
+    # bioRxiv subject category names. Empty list fetches all categories.
+    # The Settings page suggests known subjects but allows custom values.
+    # Full list: Biophysics, Genomics, Cell Biology, Molecular Biology,
+    # Bioinformatics, Neuroscience, Developmental Biology, Biochemistry, etc.
+    categories:
+      - "Biophysics"
+  pubmed:
+    enabled: true
+    # NCBI API key — free, raises rate limit from 3 to 10 req/s
+    # Get one at: https://www.ncbi.nlm.nih.gov/account/
+    api_key: null
+    # Auto builds the PubMed query from topics, keywords.include,
+    # keywords.exclude, and profile.field.
+    query_mode: auto
+    # For a PubMed-specific chip builder, switch to:
+    # query_mode: builder
+    # concepts:
+    #   - "chromatin mechanics"
+    # concept_scope: title_abstract
+    # exclude_terms:
+    #   - "review"
+    # For direct advanced PubMed syntax, switch to:
+    # query_mode: raw
+    # search_terms:
+    #   - "biophysics[MeSH]"
+    #   - "single molecule[tiab] AND biophysics[tiab]"
+  openalex:
+    enabled: false
+    # Set OPENALEX_API_KEY in your environment.
+    # OpenAlex fetches recent works using your keywords.include entries and tracked_authors.
+
+# Digest settings
+digest:
+  days_back: 3          # fetch papers published in the last N days
+  max_per_source: 200   # papers fetched per source before ranking
+  top_n: 10             # papers included in the final digest
+
+# Obsidian export (optional)
+# Set to your vault path to have each digest written as a daily note.
+# Use the full absolute path for your machine. On the other machine,
+# update this value after copying interests.yaml there.
+obsidian:
+  enabled: false
+  vault_path: null      # e.g. /home/yourname/Dropbox/Documents/Notes/Obsidian Vault
+  folder: "Research/Digest"   # subfolder inside the vault
+
+# LLM scoring + chat (requires OPENAI_API_KEY for OpenAI-backed paths)
+# Set OPENAI_API_KEY env var — do not hard-code the key here.
+# LLM scoring re-ranks the top `score_shortlist_n` embedding candidates using gpt-4o-mini.
+# llm:
+#   model: gpt-4o-mini           # any OpenAI chat model
+#   score_shortlist_n: 30        # how many candidates to re-rank via LLM

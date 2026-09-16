@@ -1,0 +1,731 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Claudesk — Project Overview Mockup</title>
+  <style>
+    :root {
+      --bg-app: #f7f7f4;
+      --bg-panel: #fbfbf8;
+      --bg-panel-subtle: #f0f0ec;
+      --bg-elevated: #ffffff;
+      --border-subtle: #ddddd6;
+      --border-strong: #b9bbb2;
+      --text-primary: #1f221e;
+      --text-secondary: #525852;
+      --text-muted: #7c827a;
+      --text-faint: #a4a9a1;
+      --state-active: #334155;
+      --state-done: #47735c;
+      --state-done-bg: #edf5ef;
+      --state-warning: #996f21;
+      --state-warning-bg: #f6efdf;
+      --state-blocked: #9a3f3f;
+      --state-blocked-bg: #f6e7e5;
+      --state-muted-bg: #edf0ef;
+      --focus-ring: #6b7280;
+      --radius-sm: 3px;
+      --radius-md: 5px;
+      --font-ui: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      --font-mono: "IBM Plex Mono", "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+      --content-width: 1280px;
+      --row-height: 34px;
+    }
+
+    [data-theme="dark"] {
+      --bg-app: #151613;
+      --bg-panel: #1b1c18;
+      --bg-panel-subtle: #23241f;
+      --bg-elevated: #20211d;
+      --border-subtle: #34362f;
+      --border-strong: #55584d;
+      --text-primary: #edeee8;
+      --text-secondary: #c4c7bc;
+      --text-muted: #91968c;
+      --text-faint: #6d7268;
+      --state-active: #cbd5e1;
+      --state-done: #8db99d;
+      --state-done-bg: #1d2a22;
+      --state-warning: #c69b4b;
+      --state-warning-bg: #2d2516;
+      --state-blocked: #d0837f;
+      --state-blocked-bg: #301d1d;
+      --state-muted-bg: #262923;
+      --focus-ring: #a3a3a3;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      background: var(--bg-app);
+      color: var(--text-primary);
+      font-family: var(--font-ui);
+      font-size: 13px;
+      line-height: 1.38;
+      letter-spacing: -0.005em;
+    }
+
+    button {
+      font: inherit;
+      color: inherit;
+      background: transparent;
+      border: 0;
+      padding: 0;
+      cursor: pointer;
+    }
+
+    button:focus-visible {
+      outline: 1px solid var(--focus-ring);
+      outline-offset: 2px;
+    }
+
+    .app-pane {
+      width: min(var(--content-width), 100vw);
+      margin: 0 auto;
+      padding: 12px 14px 24px;
+    }
+
+    .project-topbar {
+      display: grid;
+      grid-template-columns: minmax(320px, 1fr) auto;
+      column-gap: 20px;
+      align-items: start;
+      padding-bottom: 8px;
+    }
+
+    .eyebrow {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px;
+      color: var(--text-muted);
+      font-family: var(--font-mono);
+      font-size: 10.5px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-bottom: 5px;
+    }
+
+    .state-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 999px;
+      background: var(--state-active);
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 22px;
+      line-height: 1.15;
+      font-weight: 640;
+      letter-spacing: -0.035em;
+    }
+
+    .top-actions {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding-top: 8px;
+    }
+
+    .btn {
+      height: 28px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 0 10px;
+      border: 1px solid var(--border-strong);
+      border-radius: var(--radius-sm);
+      background: var(--bg-panel);
+      color: var(--text-secondary);
+      font-family: var(--font-mono);
+      font-size: 10.5px;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    .btn:hover { background: var(--bg-panel-subtle); color: var(--text-primary); }
+
+    .icon-btn {
+      width: 26px;
+      height: 26px;
+      display: inline-grid;
+      place-items: center;
+      border: 1px solid transparent;
+      border-radius: var(--radius-sm);
+      color: var(--text-muted);
+      font-size: 14px;
+    }
+
+    .icon-btn:hover {
+      border-color: var(--border-subtle);
+      background: var(--bg-panel-subtle);
+      color: var(--text-primary);
+    }
+
+    .tabs {
+      display: flex;
+      align-items: center;
+      gap: 21px;
+      height: 40px;
+      border-top: 1px solid var(--border-subtle);
+      border-bottom: 1px solid var(--border-subtle);
+      overflow-x: auto;
+    }
+
+    .tab {
+      height: 40px;
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      color: var(--text-muted);
+      border-bottom: 2px solid transparent;
+      font-family: var(--font-mono);
+      font-size: 10.5px;
+      letter-spacing: 0.09em;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    .tab.is-active {
+      color: var(--text-primary);
+      border-bottom-color: var(--text-primary);
+    }
+
+    .count-badge {
+      min-width: 18px;
+      height: 18px;
+      padding: 0 5px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 999px;
+      background: var(--bg-panel-subtle);
+      color: var(--text-muted);
+      font-size: 10px;
+      letter-spacing: 0;
+    }
+
+    .state-strip {
+      display: grid;
+      grid-template-columns: 1.05fr 1.25fr 1fr;
+      border-bottom: 1px solid var(--border-subtle);
+      background: var(--bg-panel);
+    }
+
+    .state-cell {
+      min-height: 78px;
+      padding: 12px 14px;
+      border-right: 1px solid var(--border-subtle);
+    }
+
+    .state-cell:last-child { border-right: 0; }
+
+    .label {
+      margin-bottom: 7px;
+      color: var(--text-muted);
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: 0.085em;
+      text-transform: uppercase;
+    }
+
+    .inline-title {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      font-weight: 640;
+      min-width: 0;
+    }
+
+    .inline-title span:first-child {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .small-text {
+      color: var(--text-secondary);
+      font-size: 12px;
+      max-width: 76ch;
+    }
+
+    .micro-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+      margin-top: 9px;
+    }
+
+    .pill {
+      min-height: 20px;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 1px 7px 0;
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-sm);
+      background: var(--state-muted-bg);
+      color: var(--text-muted);
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: 0.045em;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    .pill.active { color: var(--state-active); background: var(--bg-panel-subtle); border-color: var(--border-strong); }
+    .pill.done { color: var(--state-done); background: var(--state-done-bg); border-color: var(--state-done); }
+    .pill.warning { color: var(--state-warning); background: var(--state-warning-bg); border-color: var(--state-warning); }
+    .pill.blocked { color: var(--state-blocked); background: var(--state-blocked-bg); border-color: var(--state-blocked); }
+
+    .progress-line {
+      height: 4px;
+      border: 1px solid var(--border-subtle);
+      background: var(--bg-panel-subtle);
+      margin-top: 9px;
+    }
+
+    .progress-line > span {
+      display: block;
+      width: 25%;
+      height: 100%;
+      background: var(--state-done);
+    }
+
+    .overview-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.45fr) 360px;
+      gap: 14px;
+      padding-top: 14px;
+    }
+
+    .panel {
+      border: 1px solid var(--border-subtle);
+      background: var(--bg-panel);
+    }
+
+    .panel-header {
+      min-height: 34px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 0 10px;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+
+    .panel-title {
+      color: var(--text-muted);
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: 0.085em;
+      text-transform: uppercase;
+    }
+
+    .panel-body { padding: 12px 14px; }
+
+    .markdown h2,
+    .markdown h3 {
+      margin: 0 0 7px;
+      font-size: 15px;
+      line-height: 1.25;
+      font-weight: 650;
+      letter-spacing: -0.02em;
+    }
+
+    .markdown h3 {
+      margin-top: 14px;
+      font-size: 13px;
+    }
+
+    .markdown p {
+      margin: 0 0 9px;
+      color: var(--text-secondary);
+      max-width: 88ch;
+    }
+
+    .markdown ul {
+      margin: 7px 0 0;
+      padding-left: 18px;
+      color: var(--text-secondary);
+    }
+
+    .markdown li { margin: 3px 0; }
+
+    .markdown code {
+      padding: 1px 4px;
+      border: 1px solid var(--border-subtle);
+      background: var(--bg-panel-subtle);
+      border-radius: var(--radius-sm);
+      color: var(--text-secondary);
+      font-family: var(--font-mono);
+      font-size: 11px;
+    }
+
+    .section-stack {
+      display: grid;
+      gap: 14px;
+    }
+
+    .working-state {
+      display: grid;
+      grid-template-columns: 124px minmax(0, 1fr);
+      row-gap: 8px;
+      column-gap: 14px;
+      font-size: 12px;
+    }
+
+    .term {
+      color: var(--text-muted);
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: 0.075em;
+      text-transform: uppercase;
+    }
+
+    .definition { color: var(--text-secondary); }
+
+    .definition strong { color: var(--text-primary); font-weight: 620; }
+
+    .side-rail {
+      display: grid;
+      gap: 14px;
+      align-content: start;
+    }
+
+    .def-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .def-table tr { border-bottom: 1px solid var(--border-subtle); }
+    .def-table tr:last-child { border-bottom: 0; }
+
+    .def-table th,
+    .def-table td {
+      height: var(--row-height);
+      padding: 7px 10px;
+      vertical-align: middle;
+      text-align: left;
+      font-size: 12px;
+    }
+
+    .def-table th {
+      width: 42%;
+      color: var(--text-muted);
+      font-family: var(--font-mono);
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: 0.075em;
+      text-transform: uppercase;
+    }
+
+    .def-table td {
+      color: var(--text-secondary);
+    }
+
+    .mono-value {
+      color: var(--text-muted);
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: 0.02em;
+    }
+
+    .attention-list,
+    .activity-list,
+    .material-list {
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .attention-list li,
+    .activity-item,
+    .material-item {
+      display: grid;
+      gap: 4px;
+      padding: 9px 10px;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+
+    .attention-list li:last-child,
+    .activity-item:last-child,
+    .material-item:last-child { border-bottom: 0; }
+
+    .attention-title,
+    .activity-title,
+    .material-title {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 8px;
+      color: var(--text-primary);
+      font-size: 12.5px;
+      font-weight: 600;
+    }
+
+    .attention-detail,
+    .activity-detail,
+    .material-detail {
+      color: var(--text-secondary);
+      font-size: 12px;
+    }
+
+    .resource-ledger {
+      display: grid;
+      grid-template-columns: repeat(6, minmax(0, 1fr));
+      border-top: 1px solid var(--border-subtle);
+      border-bottom: 1px solid var(--border-subtle);
+      background: var(--bg-panel);
+      margin-top: 14px;
+    }
+
+    .resource-cell {
+      min-height: 56px;
+      padding: 9px 10px;
+      border-right: 1px solid var(--border-subtle);
+    }
+
+    .resource-cell:last-child { border-right: 0; }
+
+    .resource-number {
+      font-size: 20px;
+      line-height: 1.15;
+      font-weight: 640;
+      letter-spacing: -0.04em;
+    }
+
+    .resource-label {
+      margin-top: 2px;
+      color: var(--text-muted);
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .bottom-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(320px, 0.8fr);
+      gap: 14px;
+      margin-top: 14px;
+    }
+
+    .inline-actions {
+      display: inline-flex;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .text-link {
+      color: var(--text-secondary);
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: 0.055em;
+      text-transform: uppercase;
+      border-bottom: 1px solid var(--border-strong);
+    }
+
+    .text-link:hover { color: var(--text-primary); }
+
+    @media (max-width: 980px) {
+      .state-strip,
+      .overview-grid,
+      .bottom-grid { grid-template-columns: 1fr; }
+      .state-cell { border-right: 0; border-bottom: 1px solid var(--border-subtle); }
+      .state-cell:last-child { border-bottom: 0; }
+      .resource-ledger { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+      .resource-cell:nth-child(3n) { border-right: 0; }
+      .resource-cell:nth-child(n + 4) { border-top: 1px solid var(--border-subtle); }
+      .project-topbar { grid-template-columns: 1fr; }
+      .top-actions { justify-content: flex-start; }
+    }
+
+    @media (max-width: 640px) {
+      .app-pane { padding-inline: 8px; }
+      .working-state { grid-template-columns: 1fr; gap: 4px; }
+      .resource-ledger { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .resource-cell { border-right: 1px solid var(--border-subtle); border-top: 1px solid var(--border-subtle); }
+      .resource-cell:nth-child(-n + 2) { border-top: 0; }
+      .resource-cell:nth-child(2n) { border-right: 0; }
+    }
+  </style>
+</head>
+<body>
+  <main class="app-pane" data-theme="light">
+    <header class="project-topbar">
+      <div>
+        <div class="eyebrow"><span class="state-dot" aria-hidden="true"></span><span>Active</span><span>|</span><span>Updated 2026-05-15</span></div>
+        <h1>Polymer Simulation Study</h1>
+      </div>
+      <div class="top-actions" aria-label="Project actions">
+        <button class="btn">Edit overview</button>
+        <button class="btn">Add log</button>
+        <button class="icon-btn" aria-label="More project actions">⋮</button>
+      </div>
+    </header>
+
+    <nav class="tabs" aria-label="Project tabs">
+      <button class="tab is-active">Overview</button>
+      <button class="tab">Progress <span class="count-badge">4</span></button>
+      <button class="tab">Papers <span class="count-badge">18</span></button>
+      <button class="tab">Notes <span class="count-badge">7</span></button>
+      <button class="tab">Tasks <span class="count-badge">5</span></button>
+      <button class="tab">Log <span class="count-badge">12</span></button>
+      <button class="tab">Chats <span class="count-badge">2</span></button>
+      <button class="tab">Assets <span class="count-badge">3</span></button>
+    </nav>
+
+    <section class="state-strip" aria-label="Project state summary">
+      <div class="state-cell">
+        <div class="label">Next milestone</div>
+        <div class="inline-title">
+          <span>Collecting data</span>
+          <span class="pill warning">Target 2026-05-29</span>
+        </div>
+        <div class="small-text">Finish data manifest and validate the first loadable training subset.</div>
+      </div>
+      <div class="state-cell">
+        <div class="label">Current working state</div>
+        <div class="small-text">Data collection is underway; simulation validation is pending. The main analysis should not start until the validation dataset is resolved.</div>
+        <div class="micro-row">
+          <span class="pill active">Active</span>
+          <span class="pill warning">Validation pending</span>
+        </div>
+      </div>
+      <div class="state-cell">
+        <div class="label">Milestone progress</div>
+        <div class="inline-title"><span>1 / 4 complete</span><span class="pill blocked">1 blocked</span></div>
+        <div class="progress-line" aria-hidden="true"><span></span></div>
+      </div>
+    </section>
+
+    <section class="resource-ledger" aria-label="Project linked resources">
+      <div class="resource-cell"><div class="resource-number">18</div><div class="resource-label">Papers</div></div>
+      <div class="resource-cell"><div class="resource-number">7</div><div class="resource-label">Notes</div></div>
+      <div class="resource-cell"><div class="resource-number">5</div><div class="resource-label">Open tasks</div></div>
+      <div class="resource-cell"><div class="resource-number">3</div><div class="resource-label">Assets</div></div>
+      <div class="resource-cell"><div class="resource-number">12</div><div class="resource-label">Logs</div></div>
+      <div class="resource-cell"><div class="resource-number">2</div><div class="resource-label">Chats</div></div>
+    </section>
+
+    <section class="overview-grid">
+      <div class="section-stack">
+        <article class="panel" aria-label="Project description">
+          <div class="panel-header">
+            <div class="panel-title">Project description</div>
+            <button class="icon-btn" aria-label="Edit project description">✎</button>
+          </div>
+          <div class="panel-body markdown">
+            <h2>Research goal</h2>
+            <p>Build and validate a polymer simulation framework for studying how coarse-grained chromosome organization emerges from experimentally observed structural constraints.</p>
+            <p>The project connects curated experimental measurements, long Brownian dynamics simulations, and compact model diagnostics. The working hypothesis is that a small set of interpretable physical parameters can reproduce both static structural statistics and selected dynamical signatures.</p>
+            <h3>Working scope</h3>
+            <ul>
+              <li>Assemble a clean training and validation dataset from experiment-derived observables.</li>
+              <li>Run a reproducible simulation parameter sweep with archived configuration files.</li>
+              <li>Compare simulated structures against target distance, contact, and relaxation summaries.</li>
+            </ul>
+          </div>
+        </article>
+
+        <article class="panel" aria-label="Current summary">
+          <div class="panel-header">
+            <div class="panel-title">Current summary / working state</div>
+            <button class="icon-btn" aria-label="Edit current summary">✎</button>
+          </div>
+          <div class="panel-body">
+            <dl class="working-state">
+              <dt class="term">Now</dt>
+              <dd class="definition">Data collection is underway. The raw-data manifest exists, but the validation subset still needs a schema check.</dd>
+              <dt class="term">Next</dt>
+              <dd class="definition"><strong>Collecting data</strong> should close once all raw files are checksummed and one loadable training subset is verified.</dd>
+              <dt class="term">Do not start</dt>
+              <dd class="definition">Main analysis is blocked until simulation validation confirms that the parameter sweep can reproduce baseline observables.</dd>
+            </dl>
+          </div>
+        </article>
+      </div>
+
+      <aside class="side-rail" aria-label="Project overview side rail">
+        <article class="panel" aria-label="Research state ledger">
+          <div class="panel-header"><div class="panel-title">Research state ledger</div></div>
+          <table class="def-table">
+            <tbody>
+              <tr><th>Status</th><td><span class="pill active">Active</span></td></tr>
+              <tr><th>Next milestone</th><td>Collecting data</td></tr>
+              <tr><th>Target</th><td><span class="mono-value">2026-05-29</span></td></tr>
+              <tr><th>Milestones</th><td>1 done / 4 total</td></tr>
+              <tr><th>Blocked</th><td><span class="pill blocked">1 milestone</span></td></tr>
+              <tr><th>Open tasks</th><td>5 open</td></tr>
+            </tbody>
+          </table>
+        </article>
+
+        <article class="panel" aria-label="Needs attention">
+          <div class="panel-header">
+            <div class="panel-title">Needs attention</div>
+            <button class="text-link">Open progress</button>
+          </div>
+          <ul class="attention-list">
+            <li>
+              <div class="attention-title"><span>Main analysis blocked</span><span class="pill blocked">Blocked</span></div>
+              <div class="attention-detail">Waiting for simulation validation dataset and baseline parameter sweep.</div>
+            </li>
+            <li>
+              <div class="attention-title"><span>Validation due soon</span><span class="pill warning">May 29</span></div>
+              <div class="attention-detail">The current milestone target is approaching; one linked task remains open.</div>
+            </li>
+          </ul>
+        </article>
+      </aside>
+    </section>
+
+    <section class="bottom-grid">
+      <article class="panel" aria-label="Recent activity">
+        <div class="panel-header">
+          <div class="panel-title">Recent activity</div>
+          <div class="inline-actions"><button class="text-link">View log</button><button class="text-link">Add entry</button></div>
+        </div>
+        <ul class="activity-list">
+          <li class="activity-item">
+            <div class="activity-title"><span>Updated simulation parameter sweep and noted missing validation dataset.</span><span class="mono-value">Today</span></div>
+            <div class="activity-detail">Log entry linked to Collecting data and Main analysis.</div>
+          </li>
+          <li class="activity-item">
+            <div class="activity-title"><span>Attached initial parameter configuration archive.</span><span class="mono-value">May 14</span></div>
+            <div class="activity-detail">Asset added to project workspace.</div>
+          </li>
+        </ul>
+      </article>
+
+      <article class="panel" aria-label="Linked research materials snapshot">
+        <div class="panel-header">
+          <div class="panel-title">Linked materials snapshot</div>
+          <button class="text-link">Open materials</button>
+        </div>
+        <ul class="material-list">
+          <li class="material-item">
+            <div class="material-title"><span>Recent paper group</span><span class="pill">18 papers</span></div>
+            <div class="material-detail">Polymer dynamics, Brownian simulation, coarse-grained genome organization.</div>
+          </li>
+          <li class="material-item">
+            <div class="material-title"><span>Active notes</span><span class="pill">7 notes</span></div>
+            <div class="material-detail">Methods outline, simulation assumptions, validation checklist.</div>
+          </li>
+          <li class="material-item">
+            <div class="material-title"><span>Project assets</span><span class="pill">3 assets</span></div>
+            <div class="material-detail">Raw manifest draft, parameter sweep config, validation TODO file.</div>
+          </li>
+        </ul>
+      </article>
+    </section>
+  </main>
+</body>
+</html>

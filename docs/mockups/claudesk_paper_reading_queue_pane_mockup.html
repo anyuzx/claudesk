@@ -1,0 +1,844 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Claudesk Reading Queue Pane — Reading Ledger Mockup</title>
+  <style>
+    :root {
+      --bg: #f7f7f4;
+      --surface: #fbfbf8;
+      --surface-subtle: #f0f0ec;
+      --surface-muted: #e8e8e2;
+      --surface-selected: #eeeeea;
+      --surface-hover: #ffffff;
+      --border: #d8d8d1;
+      --border-strong: #b6b7ad;
+      --text: #20231f;
+      --text-soft: #4f554d;
+      --text-muted: #7a8177;
+      --text-faint: #9ba198;
+      --queued: #3f5f63;
+      --queued-bg: #edf3f3;
+      --saved: #4c745d;
+      --saved-bg: #edf5ef;
+      --read: #5d6670;
+      --read-bg: #edf0f2;
+      --pdf-ok: #4c745d;
+      --pdf-ok-bg: #edf5ef;
+      --pdf-failed: #a23e43;
+      --pdf-failed-bg: #f7e7e7;
+      --warning: #9a650e;
+      --warning-bg: #f6efdf;
+      --score: #b82632;
+      --chip-bg: #f2f2ee;
+      --focus: #20231f;
+      --font-ui: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      --font-mono: "IBM Plex Mono", "SFMono-Regular", Consolas, monospace;
+      --radius-sm: 3px;
+      --pane-w: 880px;
+      --row-min: 68px;
+    }
+
+    [data-theme="dark"] {
+      --bg: #151613;
+      --surface: #1b1c18;
+      --surface-subtle: #23241f;
+      --surface-muted: #2a2b25;
+      --surface-selected: #272923;
+      --surface-hover: #20211d;
+      --border: #36382f;
+      --border-strong: #515448;
+      --text: #eeeee7;
+      --text-soft: #c2c5ba;
+      --text-muted: #92988c;
+      --text-faint: #6d7368;
+      --queued: #8ab4ba;
+      --queued-bg: #1d2a2c;
+      --saved: #8fb79e;
+      --saved-bg: #1d2b23;
+      --read: #aab4bd;
+      --read-bg: #252932;
+      --pdf-ok: #8fb79e;
+      --pdf-ok-bg: #1d2b23;
+      --pdf-failed: #dd8388;
+      --pdf-failed-bg: #321e20;
+      --warning: #c99a4a;
+      --warning-bg: #302617;
+      --score: #dd8388;
+      --chip-bg: #242520;
+      --focus: #d7dfeb;
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: grid;
+      place-items: start center;
+      padding: 24px 12px;
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font-ui);
+      font-size: 13px;
+      line-height: 1.35;
+    }
+    button, input, select { font: inherit; color: inherit; }
+    button { border: 0; padding: 0; background: transparent; cursor: pointer; }
+
+    .mockup-note, .implementation-note {
+      width: min(var(--pane-w), 100%);
+      color: var(--text-muted);
+    }
+    .mockup-note {
+      margin-bottom: 10px;
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+    }
+    .pane {
+      width: min(var(--pane-w), 100%);
+      background: var(--surface);
+      border: 1px solid var(--border);
+    }
+    .pane-header {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      align-items: center;
+      min-height: 44px;
+      padding: 0 10px 0 14px;
+      border-bottom: 1px solid var(--border);
+    }
+    .title-line {
+      display: flex;
+      align-items: baseline;
+      gap: 8px;
+      min-width: 0;
+    }
+    .nav-chevrons {
+      display: inline-flex;
+      gap: 2px;
+      margin-right: 4px;
+      color: var(--text-muted);
+      font-family: var(--font-mono);
+      font-size: 13px;
+    }
+    .kicker {
+      color: var(--text);
+      font-family: var(--font-mono);
+      font-size: 12px;
+      letter-spacing: 0.11em;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+    .count {
+      color: var(--text-muted);
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .button, .icon-button {
+      height: 28px;
+      border-radius: var(--radius-sm);
+      color: var(--text-soft);
+    }
+    .button {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 0 8px;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+    .button.primary {
+      color: var(--queued);
+      background: var(--queued-bg);
+      border-color: color-mix(in srgb, var(--queued), var(--border) 55%);
+    }
+    .button:hover, .button:focus-visible, .icon-button:hover, .icon-button:focus-visible {
+      outline: 0;
+      border-color: var(--border-strong);
+      background: var(--surface-subtle);
+      color: var(--text);
+    }
+    .icon-button {
+      width: 28px;
+      display: grid;
+      place-items: center;
+      border: 1px solid transparent;
+      font-size: 16px;
+      line-height: 1;
+    }
+
+    .toolbar {
+      display: grid;
+      grid-template-columns: minmax(180px, 1fr) 118px 108px 108px 106px;
+      gap: 8px;
+      align-items: center;
+      padding: 8px 10px;
+      border-bottom: 1px solid var(--border);
+      background: var(--surface-subtle);
+    }
+    .search-wrap { position: relative; min-width: 0; }
+    .search-icon {
+      position: absolute;
+      left: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-muted);
+      font-size: 14px;
+      pointer-events: none;
+    }
+    .search {
+      width: 100%;
+      height: 30px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      background: var(--surface);
+      padding: 0 10px 0 31px;
+      color: var(--text);
+      font-size: 12px;
+    }
+    .search::placeholder { color: var(--text-muted); }
+    .select {
+      height: 30px;
+      min-width: 0;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      background: var(--surface);
+      padding: 0 22px 0 8px;
+      color: var(--text-soft);
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    .summary-strip {
+      display: grid;
+      grid-template-columns: 0.9fr 0.9fr 0.9fr 1fr 1fr;
+      border-bottom: 1px solid var(--border);
+      background: var(--surface);
+    }
+    .summary-cell {
+      min-height: 44px;
+      padding: 7px 10px;
+      border-right: 1px solid var(--border);
+    }
+    .summary-cell:last-child { border-right: 0; }
+    .label {
+      margin-bottom: 2px;
+      color: var(--text-muted);
+      font-family: var(--font-mono);
+      font-size: 9px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+    .summary-value {
+      color: var(--text);
+      font-family: var(--font-mono);
+      font-size: 12px;
+      letter-spacing: 0.03em;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .summary-value .muted { color: var(--text-muted); }
+    .summary-value .queued { color: var(--queued); }
+    .summary-value .warning { color: var(--warning); }
+
+    .list-head, .paper-row {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 78px 88px 94px;
+      column-gap: 10px;
+      align-items: center;
+    }
+    .list-head {
+      height: 31px;
+      padding: 0 12px;
+      border-bottom: 1px solid var(--border);
+      color: var(--text-muted);
+      font-family: var(--font-mono);
+      font-size: 9px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+    .paper-row {
+      position: relative;
+      min-height: var(--row-min);
+      padding: 9px 12px;
+      border-bottom: 1px solid var(--border);
+      background: var(--surface);
+      color: inherit;
+      text-decoration: none;
+    }
+    .paper-row:last-child { border-bottom: 0; }
+    .paper-row:hover { background: var(--surface-hover); }
+    .paper-row.is-selected {
+      background: var(--surface-selected);
+      box-shadow: inset 3px 0 0 var(--text);
+    }
+    .paper-row:focus-visible {
+      outline: 1px solid var(--focus);
+      outline-offset: -1px;
+    }
+    .paper-main {
+      min-width: 0;
+      display: grid;
+      gap: 5px;
+    }
+    .paper-title {
+      min-width: 0;
+      color: var(--text);
+      font-size: 14px;
+      font-weight: 590;
+      letter-spacing: -0.015em;
+      line-height: 1.25;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    .paper-row.compact .paper-title {
+      display: block;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+    }
+    .paper-meta {
+      min-width: 0;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      color: var(--text-muted);
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .source { color: var(--text-soft); }
+    .dot-sep { color: var(--text-faint); }
+    .reason {
+      color: var(--text-soft);
+      font-size: 12px;
+      line-height: 1.35;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 68ch;
+    }
+    .score-cell {
+      display: grid;
+      gap: 5px;
+      justify-items: end;
+      min-width: 0;
+    }
+    .score-number {
+      color: var(--text-soft);
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: 0.04em;
+    }
+    .score-number.high { color: var(--score); }
+    .score-meter {
+      width: 58px;
+      height: 7px;
+      display: grid;
+      grid-template-columns: repeat(10, 1fr);
+      gap: 1px;
+    }
+    .score-meter span {
+      border: 1px solid var(--border);
+      background: var(--surface-muted);
+    }
+    .score-meter .on {
+      background: var(--score);
+      border-color: color-mix(in srgb, var(--score), var(--border) 45%);
+    }
+    .score-meter .mid {
+      background: var(--text-muted);
+      border-color: color-mix(in srgb, var(--text-muted), var(--border) 45%);
+    }
+    .state-cell, .links-cell {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+      min-width: 0;
+    }
+    .links-cell { justify-content: flex-end; }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      height: 19px;
+      max-width: 88px;
+      padding: 0 6px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      background: var(--chip-bg);
+      color: var(--text-muted);
+      font-family: var(--font-mono);
+      font-size: 9px;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .badge.queued {
+      color: var(--queued);
+      background: var(--queued-bg);
+      border-color: color-mix(in srgb, var(--queued), var(--border) 55%);
+    }
+    .badge.saved {
+      color: var(--saved);
+      background: var(--saved-bg);
+      border-color: color-mix(in srgb, var(--saved), var(--border) 55%);
+    }
+    .badge.read {
+      color: var(--read);
+      background: var(--read-bg);
+      border-color: color-mix(in srgb, var(--read), var(--border) 55%);
+    }
+    .badge.pdf-ok {
+      color: var(--pdf-ok);
+      background: var(--pdf-ok-bg);
+      border-color: color-mix(in srgb, var(--pdf-ok), var(--border) 55%);
+    }
+    .badge.pdf-failed {
+      color: var(--pdf-failed);
+      background: var(--pdf-failed-bg);
+      border-color: color-mix(in srgb, var(--pdf-failed), var(--border) 55%);
+    }
+    .badge.warning {
+      color: var(--warning);
+      background: var(--warning-bg);
+      border-color: color-mix(in srgb, var(--warning), var(--border) 55%);
+    }
+    .quiet-actions {
+      position: absolute;
+      right: 10px;
+      bottom: 8px;
+      display: flex;
+      gap: 2px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 120ms ease;
+    }
+    .paper-row:hover .quiet-actions, .paper-row:focus-within .quiet-actions {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    .action-button {
+      width: 22px;
+      height: 22px;
+      display: grid;
+      place-items: center;
+      border: 1px solid transparent;
+      border-radius: var(--radius-sm);
+      color: var(--text-muted);
+      font-size: 13px;
+      background: var(--surface);
+    }
+    .action-button:hover, .action-button:focus-visible {
+      outline: 0;
+      border-color: var(--border);
+      background: var(--surface-subtle);
+      color: var(--text);
+    }
+    .context-menu {
+      position: absolute;
+      right: 8px;
+      top: 47px;
+      z-index: 2;
+      width: 178px;
+      padding: 4px;
+      border: 1px solid var(--border-strong);
+      background: var(--surface);
+    }
+    .menu-caption {
+      padding: 5px 7px 6px;
+      margin-bottom: 3px;
+      border-bottom: 1px solid var(--border);
+      color: var(--text-muted);
+      font-family: var(--font-mono);
+      font-size: 9px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+    .menu-item {
+      width: 100%;
+      height: 26px;
+      padding: 0 7px;
+      border-radius: var(--radius-sm);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      color: var(--text-soft);
+      font-size: 12px;
+      text-align: left;
+    }
+    .menu-item:hover, .menu-item:focus-visible {
+      outline: 0;
+      background: var(--surface-subtle);
+      color: var(--text);
+    }
+    .menu-item.danger { color: var(--pdf-failed); }
+
+    .state-examples {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+      padding: 10px;
+      border-top: 1px solid var(--border);
+      background: var(--surface-subtle);
+    }
+    .state-box {
+      min-height: 76px;
+      padding: 10px;
+      border: 1px solid var(--border);
+      background: var(--surface);
+    }
+    .state-title {
+      margin-bottom: 7px;
+      color: var(--text-muted);
+      font-family: var(--font-mono);
+      font-size: 9px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+    .state-text {
+      color: var(--text-soft);
+      font-size: 12px;
+      line-height: 1.4;
+    }
+    .skeleton-line {
+      height: 8px;
+      margin-bottom: 7px;
+      border: 1px solid var(--border);
+      background: var(--surface-muted);
+    }
+    .skeleton-line:nth-child(2) { width: 92%; }
+    .skeleton-line:nth-child(3) { width: 72%; }
+    .skeleton-line:nth-child(4) { width: 86%; }
+    .error-text { color: var(--pdf-failed); }
+    .implementation-note {
+      margin-top: 10px;
+      font-size: 12px;
+      line-height: 1.45;
+    }
+
+    @media (max-width: 760px) {
+      .toolbar { grid-template-columns: 1fr 1fr 1fr; }
+      .toolbar .search-wrap { grid-column: 1 / -1; }
+      .summary-strip { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .summary-cell:nth-child(2), .summary-cell:nth-child(4) { border-right: 0; }
+      .summary-cell:nth-child(n + 3) { border-top: 1px solid var(--border); }
+      .summary-cell:last-child { grid-column: 1 / -1; }
+      .list-head { display: none; }
+      .paper-row {
+        grid-template-columns: minmax(0, 1fr) 72px;
+        grid-template-areas:
+          "paper score"
+          "paper state"
+          "paper links";
+        row-gap: 6px;
+      }
+      .paper-main { grid-area: paper; }
+      .score-cell { grid-area: score; }
+      .state-cell { grid-area: state; justify-content: flex-end; }
+      .links-cell { grid-area: links; }
+      .quiet-actions { opacity: 1; pointer-events: auto; }
+      .state-examples { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 560px) {
+      .pane-header {
+        grid-template-columns: 1fr;
+        row-gap: 6px;
+        padding: 9px 10px;
+      }
+      .header-actions { justify-content: space-between; }
+      .toolbar { grid-template-columns: 1fr 1fr; }
+      .paper-row {
+        grid-template-columns: 1fr;
+        grid-template-areas:
+          "paper"
+          "score"
+          "state"
+          "links";
+      }
+      .score-cell, .state-cell, .links-cell {
+        justify-items: start;
+        justify-content: flex-start;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="mockup-note">Reading Queue pane mockup · reading ledger layout · paper backlog, not task list</div>
+
+  <main class="pane" data-theme="light" aria-label="Claudesk reading queue mockup">
+    <header class="pane-header">
+      <div class="title-line">
+        <span class="nav-chevrons">›‹</span>
+        <span class="kicker">Reading Queue</span>
+        <span class="count">18 to-read</span>
+      </div>
+      <div class="header-actions">
+        <button class="button primary" aria-label="Add paper to queue">+ Add paper</button>
+        <button class="icon-button" aria-label="More queue actions">⋮</button>
+      </div>
+    </header>
+
+    <section class="toolbar" aria-label="Reading queue controls">
+      <div class="search-wrap">
+        <span class="search-icon">⌕</span>
+        <input class="search" type="search" placeholder="Search queued papers…" aria-label="Search queued papers" />
+      </div>
+      <select class="select" aria-label="Sort reading queue">
+        <option>Relevance</option>
+        <option>Newest</option>
+        <option>Queued date</option>
+        <option>Source</option>
+      </select>
+      <select class="select" aria-label="Read status filter">
+        <option>Unread only</option>
+        <option>All papers</option>
+        <option>Read</option>
+      </select>
+      <select class="select" aria-label="PDF filter">
+        <option>Any PDF</option>
+        <option>Has PDF</option>
+        <option>Parsed PDF</option>
+        <option>PDF failed</option>
+      </select>
+      <select class="select" aria-label="Source filter">
+        <option>All sources</option>
+        <option>bioRxiv</option>
+        <option>arXiv</option>
+        <option>PubMed</option>
+        <option>OpenAlex</option>
+      </select>
+    </section>
+
+    <section class="summary-strip" aria-label="Reading queue summary">
+      <div class="summary-cell">
+        <div class="label">Queue</div>
+        <div class="summary-value"><span class="queued">18</span> <span class="muted">to-read</span></div>
+      </div>
+      <div class="summary-cell">
+        <div class="label">Ready to read</div>
+        <div class="summary-value">9 <span class="muted">with PDF</span></div>
+      </div>
+      <div class="summary-cell">
+        <div class="label">High relevance</div>
+        <div class="summary-value">4 <span class="muted">papers</span></div>
+      </div>
+      <div class="summary-cell">
+        <div class="label">Stale</div>
+        <div class="summary-value"><span class="warning">3</span> <span class="muted">older than 30d</span></div>
+      </div>
+      <div class="summary-cell">
+        <div class="label">Next suggested read</div>
+        <div class="summary-value">GLE model for chromatin relaxation</div>
+      </div>
+    </section>
+
+    <section class="queue-list" aria-label="Reading queue paper list">
+      <div class="list-head" aria-hidden="true">
+        <span>Paper</span>
+        <span>Score</span>
+        <span>State</span>
+        <span>Links</span>
+      </div>
+
+      <a class="paper-row is-selected" href="#" aria-current="page">
+        <div class="paper-main">
+          <div class="paper-meta">
+            <span class="source">bioRxiv</span><span class="dot-sep">·</span><span>2026-05-10</span><span class="dot-sep">·</span><span>queued May 16</span>
+          </div>
+          <div class="paper-title">A generalized Langevin model for chromatin stress relaxation</div>
+          <div class="reason">Best next read: directly connected to HIPPS-DIMES memory kernels and stress-relaxation fitting.</div>
+        </div>
+        <div class="score-cell">
+          <span class="score-number high">0.94</span>
+          <div class="score-meter" aria-hidden="true">
+            <span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span>
+            <span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span><span></span>
+          </div>
+        </div>
+        <div class="state-cell">
+          <span class="badge queued">Queued</span><span class="badge pdf-ok">PDF parsed</span>
+        </div>
+        <div class="links-cell">
+          <span class="badge">3 notes</span><span class="badge">2 projects</span>
+        </div>
+        <div class="quiet-actions" aria-label="Paper actions">
+          <button class="action-button" aria-label="Mark as read">✓</button>
+          <button class="action-button" aria-label="Add to chat">↗</button>
+          <button class="action-button" aria-label="More actions">⋯</button>
+        </div>
+      </a>
+
+      <a class="paper-row" href="#">
+        <div class="paper-main">
+          <div class="paper-meta">
+            <span class="source">arXiv</span><span class="dot-sep">·</span><span>2026-05-14</span><span class="dot-sep">·</span><span>queued May 15</span>
+          </div>
+          <div class="paper-title">Polymer simulations of condensate-mediated enhancer contacts</div>
+          <div class="reason">Saved already; useful for condensate-mediated enhancer contact mechanisms.</div>
+        </div>
+        <div class="score-cell">
+          <span class="score-number high">0.88</span>
+          <div class="score-meter" aria-hidden="true">
+            <span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span>
+            <span class="on"></span><span class="on"></span><span class="on"></span><span></span><span></span>
+          </div>
+        </div>
+        <div class="state-cell">
+          <span class="badge queued">Queued</span><span class="badge saved">Saved</span>
+        </div>
+        <div class="links-cell">
+          <span class="badge">1 note</span><span class="badge">1 project</span>
+        </div>
+      </a>
+
+      <a class="paper-row" href="#">
+        <div class="paper-main">
+          <div class="paper-meta">
+            <span class="source">PubMed</span><span class="dot-sep">·</span><span>2026-05-04</span><span class="dot-sep">·</span><span>queued May 10</span>
+          </div>
+          <div class="paper-title">Single-molecule tracking identifies two chromatin mobility states</div>
+          <div class="reason">Good experimental comparison for two-state dynamics and model validation.</div>
+        </div>
+        <div class="score-cell">
+          <span class="score-number">0.79</span>
+          <div class="score-meter" aria-hidden="true">
+            <span class="mid"></span><span class="mid"></span><span class="mid"></span><span class="mid"></span><span class="mid"></span>
+            <span class="mid"></span><span class="mid"></span><span></span><span></span><span></span>
+          </div>
+        </div>
+        <div class="state-cell">
+          <span class="badge queued">Queued</span><span class="badge pdf-ok">PDF parsed</span>
+        </div>
+        <div class="links-cell">
+          <span class="badge">2 notes</span>
+        </div>
+      </a>
+
+      <a class="paper-row" href="#">
+        <div class="paper-main">
+          <div class="paper-meta">
+            <span class="source">OpenAlex</span><span class="dot-sep">·</span><span>2026-04-28</span><span class="dot-sep">·</span><span>queued May 03</span>
+          </div>
+          <div class="paper-title">Deep learning for 3D genome folding from sparse contacts</div>
+          <div class="reason">Relevant but PDF parsing failed; retry before using for detailed chat or notes.</div>
+        </div>
+        <div class="score-cell">
+          <span class="score-number">0.72</span>
+          <div class="score-meter" aria-hidden="true">
+            <span class="mid"></span><span class="mid"></span><span class="mid"></span><span class="mid"></span><span class="mid"></span>
+            <span class="mid"></span><span class="mid"></span><span></span><span></span><span></span>
+          </div>
+        </div>
+        <div class="state-cell">
+          <span class="badge queued">Queued</span><span class="badge pdf-failed">PDF failed</span>
+        </div>
+        <div class="links-cell">
+          <span class="badge">1 project</span>
+        </div>
+        <aside class="context-menu" aria-label="Example paper context menu">
+          <div class="menu-caption">Queue actions</div>
+          <button class="menu-item">Open paper <span>↵</span></button>
+          <button class="menu-item">Mark as read</button>
+          <button class="menu-item">Retry PDF fetch</button>
+          <button class="menu-item">Add to project</button>
+          <button class="menu-item">Add to chat</button>
+          <button class="menu-item danger">Remove from queue</button>
+        </aside>
+      </a>
+
+      <a class="paper-row" href="#">
+        <div class="paper-main">
+          <div class="paper-meta">
+            <span class="source">bioRxiv</span><span class="dot-sep">·</span><span>2026-03-18</span><span class="dot-sep">·</span><span>queued Mar 21</span>
+          </div>
+          <div class="paper-title">Statistical potentials for active polymer organization</div>
+          <div class="reason">Older queued item; keep only if still useful for the statistical-potential framing.</div>
+        </div>
+        <div class="score-cell">
+          <span class="score-number">0.61</span>
+          <div class="score-meter" aria-hidden="true">
+            <span class="mid"></span><span class="mid"></span><span class="mid"></span><span class="mid"></span><span class="mid"></span>
+            <span class="mid"></span><span></span><span></span><span></span><span></span>
+          </div>
+        </div>
+        <div class="state-cell">
+          <span class="badge queued">Queued</span><span class="badge warning">Older</span>
+        </div>
+        <div class="links-cell">
+          <span class="badge">0 notes</span>
+        </div>
+      </a>
+
+      <a class="paper-row compact" href="#">
+        <div class="paper-main">
+          <div class="paper-meta">
+            <span class="source">PubMed</span><span class="dot-sep">·</span><span>2026-05-04</span><span class="dot-sep">·</span><span>queued May 06</span>
+          </div>
+          <div class="paper-title">Integrated MINFLUX tracking reveals two chromatin dynamics</div>
+        </div>
+        <div class="score-cell">
+          <span class="score-number">0.58</span>
+          <div class="score-meter" aria-hidden="true">
+            <span class="mid"></span><span class="mid"></span><span class="mid"></span><span class="mid"></span><span class="mid"></span>
+            <span></span><span></span><span></span><span></span><span></span>
+          </div>
+        </div>
+        <div class="state-cell">
+          <span class="badge queued">Queued</span><span class="badge pdf-ok">PDF</span>
+        </div>
+        <div class="links-cell">
+          <span class="badge">1 note</span>
+        </div>
+      </a>
+    </section>
+
+    <section class="state-examples" aria-label="Small state examples">
+      <div class="state-box">
+        <div class="state-title">Empty state</div>
+        <div class="state-text">No papers match this queue filter. Keep the action focused: add paper, clear filters, or open Digest.</div>
+      </div>
+      <div class="state-box">
+        <div class="state-title">Loading state</div>
+        <div class="skeleton-line"></div>
+        <div class="skeleton-line"></div>
+        <div class="skeleton-line"></div>
+      </div>
+      <div class="state-box">
+        <div class="state-title">Error state</div>
+        <div class="state-text error-text">Could not load queue metadata. Preserve local paper rows if available and retry badges/counts.</div>
+      </div>
+    </section>
+  </main>
+
+  <p class="implementation-note">
+    Interaction notes: row click opens the paper; Enter opens the selected row; arrow keys move selection; context menu provides mark read, remove from queue, save/unsave, open URL, fetch/open PDF, add to project, and add to chat; filters should not change paper state; Reading Queue should not share task semantics or task counts.
+  </p>
+</body>
+</html>

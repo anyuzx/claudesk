@@ -1,0 +1,57 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+dist/
+build/
+.eggs/
+*.egg
+*.so
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Personal data — never commit these
+/data/
+
+# Machine-local config
+.env
+.env.*
+!.env.example
+
+# IDE / editor
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+.DS_Store?
+Thumbs.db
+._*
+
+# Jupyter
+.ipynb_checkpoints/
+
+# sentence-transformers model cache (large, re-downloadable)
+.cache/
+models/
+
+# pytest / coverage
+.pytest_cache/
+.coverage
+htmlcov/
+
+# coding agent
+.claude/
+.codex
+
+# others
+resume_claude_once.sh
+.VSCodeCounter/
+tmp/
+.impeccable/

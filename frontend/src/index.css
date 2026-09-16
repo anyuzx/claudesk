@@ -1,0 +1,3204 @@
+@import "tailwindcss";
+@plugin "@tailwindcss/typography";
+
+/* Tailwind token registration and default dark runtime values. */
+@theme {
+  --color-bg:        oklch(12.5% 0.008 255);
+  --color-sidebar:   oklch(14.5% 0.009 255);
+  --color-surface:   oklch(16.5% 0.009 255);
+  --color-hover:     oklch(20.5% 0.011 255);
+  --color-border:    oklch(25% 0.012 255);
+  --color-display:   oklch(96% 0.006 88);
+  --color-primary:   oklch(88% 0.007 88);
+  --color-secondary: oklch(68% 0.018 230);
+  --color-muted:     oklch(61% 0.016 230);
+  --color-active-surface: oklch(22% 0.035 245);
+  --color-active:    oklch(65% 0.13 245);
+  --color-accent:    oklch(63% 0.17 27);
+  --color-success:   oklch(67% 0.12 152);
+  --color-warn:      oklch(73% 0.13 78);
+  --font-sans:       var(--font-ui-family), system-ui, sans-serif;
+  --font-content:    var(--font-content-family), Georgia, serif;
+  --font-mono:       var(--font-mono-family), Menlo, monospace;
+  --font-dot:        var(--font-display-family), system-ui, sans-serif;
+}
+
+/* Runtime tokens that are not theme-specific. */
+:root {
+  --font-ui-family: 'Space Grotesk';
+  --font-content-family: 'Crimson Pro';
+  --font-mono-family: 'Commit Mono';
+  --font-display-family: 'Nabla';
+  --pane-header-height: 48px;
+  --electron-traffic-safe-left: 80px;
+  --electron-titlebar-overlay-safe-width: 96px;
+  --electron-titlebar-overlay-gap-reduction: 12px;
+  --control-radius: 4px;
+}
+
+/* Runtime light theme overrides for the same --color-* variables above. */
+:root.light {
+  --color-bg:        oklch(98.5% 0.004 230);
+  --color-sidebar:   oklch(94.5% 0.006 230);
+  --color-surface:   oklch(96.5% 0.005 230);
+  --color-hover:     oklch(91.8% 0.008 230);
+  --color-border:    oklch(86.5% 0.008 230);
+  --color-display:   oklch(23% 0.012 230);
+  --color-primary:   oklch(31% 0.011 230);
+  --color-secondary: oklch(43% 0.018 230);
+  --color-muted:     oklch(48% 0.016 230);
+  --color-active-surface: oklch(88.5% 0.027 245);
+  --color-active:    oklch(41% 0.1 245);
+  --color-accent:    oklch(48% 0.17 27);
+  --color-success:   oklch(43% 0.11 152);
+  --color-warn:      oklch(46% 0.12 72);
+}
+
+/* Electron shell and titlebar integration. */
+html[data-desktop-shell="electron"] .electron-drag-region {
+  -webkit-app-region: drag;
+  app-region: drag;
+}
+
+html[data-desktop-shell="electron"] .electron-no-drag,
+html[data-desktop-shell="electron"] :is(
+  a,
+  button,
+  input,
+  select,
+  textarea,
+  [contenteditable="true"],
+  [role="button"],
+  [role="combobox"],
+  [role="listbox"],
+  [role="menu"],
+  [role="menuitem"],
+  [role="option"],
+  [role="slider"],
+  [role="switch"],
+  [role="tab"],
+  [data-electron-no-drag],
+  [data-resize-handle],
+  [data-separator]
+) {
+  -webkit-app-region: no-drag;
+  app-region: no-drag;
+}
+
+/* Override the shared sidebar width so macOS traffic lights occupy real empty chrome. */
+html[data-desktop-shell="electron"][data-platform="macos"] [data-slot="sidebar"][data-state="collapsed"] {
+  width: 0 !important;
+  border-right-width: 0 !important;
+  pointer-events: none;
+}
+
+html[data-desktop-shell="electron"][data-platform="macos"] [data-slot="sidebar"][data-state="collapsed"]::after {
+  display: none;
+}
+
+html[data-desktop-shell="electron"][data-platform="macos"] [data-slot="sidebar"][data-state="collapsed"] > * {
+  display: none;
+}
+
+html[data-desktop-shell="electron"][data-platform="macos"] .electron-macos-titlebar-safe-offset {
+  margin-left: var(--electron-traffic-safe-left);
+}
+
+/* Settings sidebar would otherwise start under the native macOS titlebar area. */
+html[data-desktop-shell="electron"][data-platform="macos"] .electron-macos-settings-sidebar-safe {
+  padding-top: calc(var(--pane-header-height) + 0.75rem) !important;
+}
+
+html[data-desktop-shell="electron"][data-platform="linux"][data-titlebar-overlay="true"] {
+  --electron-titlebar-overlay-spacer-width: max(
+    var(--electron-titlebar-overlay-safe-width),
+    calc(
+      100vw - env(titlebar-area-x, 0px) -
+      env(titlebar-area-width, calc(100vw - var(--electron-titlebar-overlay-safe-width))) -
+      var(--electron-titlebar-overlay-gap-reduction)
+    )
+  );
+}
+
+html[data-desktop-shell="electron"][data-platform="linux"][data-titlebar-overlay="true"] .electron-titlebar-overlay-spacer {
+  width: var(--electron-titlebar-overlay-spacer-width, var(--electron-titlebar-overlay-safe-width));
+}
+
+html[data-desktop-shell="electron"][data-platform="linux"][data-titlebar-overlay="true"] .electron-titlebar-overlay-spacer-trim-gap {
+  margin-left: -1rem;
+}
+
+html[data-desktop-shell="electron"][data-platform="linux"][data-titlebar-overlay="true"] [data-pane-header="true"],
+html[data-desktop-shell="electron"][data-platform="linux"][data-titlebar-overlay="true"] [data-resize-header-border="true"] {
+  border-bottom-color: transparent;
+}
+
+html[data-desktop-shell="electron"][data-platform="linux"][data-titlebar-overlay="true"] [data-settings-menu="true"] {
+  margin-top: 20px;
+}
+
+html[data-desktop-shell="electron"][data-platform="linux"][data-titlebar-overlay="true"] [data-settings-main-content="true"] {
+  margin-top: var(--pane-header-height);
+}
+
+/* Global app defaults. */
+* { box-sizing: border-box; }
+
+body {
+  background: var(--color-bg);
+  color: var(--color-primary);
+  font-family: var(--font-ui-family), system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+::-webkit-scrollbar { width: 4px; height: 4px; }
+::-webkit-scrollbar-track { background: var(--color-bg); }
+::-webkit-scrollbar-thumb { background: var(--color-border); border-radius: 2px; }
+
+[data-slot="search-field-input"] {
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+[data-slot="search-field-input"]::-webkit-search-cancel-button,
+[data-slot="search-field-input"]::-webkit-search-decoration,
+[data-slot="search-field-input"]::-webkit-search-results-button,
+[data-slot="search-field-input"]::-webkit-search-results-decoration {
+  display: none;
+  width: 0;
+  height: 0;
+  margin: 0;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+a { color: inherit; text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+.divider-dotted {
+  height: 1px;
+  background-image: radial-gradient(circle, var(--color-border) 0.5px, transparent 0.5px);
+  background-size: 4px 1px;
+  background-repeat: repeat-x;
+  background-position: 0 50%;
+}
+
+.chat-message {
+  content-visibility: auto;
+  contain-intrinsic-size: 160px;
+}
+
+/* PDF.js viewer shell overrides. */
+.claudesk-pdf-viewer .pdfViewer {
+  --page-border: 0;
+  --page-margin: 12px auto 16px;
+  background: var(--color-surface);
+  padding: 12px 8px;
+}
+
+.claudesk-pdf-viewer,
+.claudesk-pdf-viewer * {
+  scrollbar-color: var(--color-border) var(--color-surface);
+}
+
+.claudesk-pdf-viewer ::-webkit-scrollbar-track,
+.claudesk-pdf-viewer ::-webkit-scrollbar-corner {
+  background: var(--color-surface);
+}
+
+.claudesk-pdf-viewer ::-webkit-scrollbar-thumb {
+  background: var(--color-border);
+}
+
+.claudesk-pdf-toolbar {
+  container: claudesk-pdf-toolbar / inline-size;
+  height: 44px;
+  min-height: 44px;
+  white-space: nowrap;
+}
+
+.claudesk-pdf-toolbar * {
+  white-space: nowrap;
+}
+
+@container claudesk-pdf-toolbar (max-width: 880px) {
+  .claudesk-pdf-search-meta,
+  .claudesk-pdf-search-nav {
+    display: none;
+  }
+
+  .claudesk-pdf-toolbar-search [data-slot="search-field"] {
+    width: 10rem;
+  }
+}
+
+@container claudesk-pdf-toolbar (max-width: 720px) {
+  .claudesk-pdf-toolbar-search,
+  .claudesk-pdf-toolbar-chat-context-separator {
+    display: none;
+  }
+}
+
+@container claudesk-pdf-toolbar (max-width: 560px) {
+  .claudesk-pdf-page-jump-error {
+    display: none;
+  }
+}
+
+@container claudesk-pdf-toolbar (max-width: 480px) {
+  .claudesk-pdf-toolbar-zoom,
+  .claudesk-pdf-toolbar-separator {
+    display: none;
+  }
+}
+
+/* Override PDF.js page chrome so pages fit Claudesk surface tokens. */
+.claudesk-pdf-viewer .pdfViewer .page {
+  background: var(--color-bg);
+  border: 1px solid color-mix(in oklab, var(--color-border) 82%, transparent) !important;
+  box-shadow: none !important;
+}
+
+.claudesk-pdf-viewer .pdfViewer .page.loadingIcon::after {
+  border-color: var(--color-border);
+  border-top-color: var(--color-secondary);
+}
+
+.claudesk-pdf-search-target-overlay {
+  position: absolute;
+  pointer-events: none;
+  z-index: 6;
+  border: 2px solid var(--color-accent);
+  border-radius: 2px;
+  background: color-mix(in oklab, var(--color-accent) 18%, transparent);
+  box-shadow:
+    0 0 0 1px var(--color-bg),
+    0 0 0 4px color-mix(in oklab, var(--color-accent) 14%, transparent);
+}
+
+.claudesk-pdf-viewer .claudesk-pdf-sidebar {
+  color: var(--color-primary);
+}
+
+.claudesk-pdf-viewer .claudesk-pdf-sidebar canvas {
+  background: var(--color-bg);
+}
+
+.claudesk-pdf-viewer .claudesk-pdf-sidebar [aria-current="page"] {
+  color: var(--color-display);
+}
+
+/* Markdown: Tailwind prose token bridge. */
+.md.prose {
+  --tw-prose-body: var(--color-primary);
+  --tw-prose-headings: var(--color-display);
+  --tw-prose-lead: var(--color-secondary);
+  --tw-prose-links: var(--color-secondary);
+  --tw-prose-bold: var(--color-display);
+  --tw-prose-counters: var(--color-muted);
+  --tw-prose-bullets: var(--color-muted);
+  --tw-prose-hr: var(--color-border);
+  --tw-prose-quotes: var(--color-secondary);
+  --tw-prose-quote-borders: var(--color-border);
+  --tw-prose-captions: var(--color-muted);
+  --tw-prose-kbd: var(--color-display);
+  --tw-prose-kbd-shadows: transparent;
+  --tw-prose-code: var(--color-display);
+  --tw-prose-pre-code: var(--color-primary);
+  --tw-prose-pre-bg: var(--color-surface);
+  --tw-prose-th-borders: var(--color-border);
+  --tw-prose-td-borders: var(--color-border);
+}
+
+.md-katex-counter-scope {
+  counter-reset: katexEqnNo mmlEqnNo;
+}
+
+/* Markdown: base prose elements. */
+.md.prose :where(a:not([class])):not(:where([class~="not-prose"], [class~="not-prose"] *)) {
+  color: inherit;
+  font-weight: inherit;
+  text-decoration-color: var(--color-border);
+  text-underline-offset: 2px;
+}
+
+.md .md-link,
+.claudesk-rich-markdown-editor .ProseMirror a {
+  color: var(--color-active);
+  font-weight: 500;
+  text-decoration-line: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.16em;
+  transition: background-color 160ms ease-out, color 160ms ease-out, text-decoration-color 160ms ease-out;
+}
+
+.md .md-link[data-link-kind="external"],
+.claudesk-rich-markdown-editor .ProseMirror a[href^="http://"],
+.claudesk-rich-markdown-editor .ProseMirror a[href^="https://"] {
+  color: var(--color-active);
+  text-decoration-color: color-mix(in oklab, var(--color-active) 72%, var(--color-border));
+}
+
+.md .md-link[data-link-kind="paper"],
+.claudesk-rich-markdown-editor .ProseMirror a[href^="paper://"] {
+  background: color-mix(in oklab, var(--color-active) 9%, transparent);
+  color: var(--color-display);
+  padding: 0 0.12em;
+  text-decoration-color: color-mix(in oklab, var(--color-active) 58%, var(--color-border));
+  text-decoration-style: dotted;
+}
+
+.md .md-link[data-link-kind="note"] {
+  align-items: baseline;
+  background: color-mix(in oklab, var(--color-secondary) 10%, transparent);
+  color: var(--color-display);
+  display: inline-flex;
+  gap: 0.18em;
+  padding: 0 0.16em;
+  text-decoration-color: color-mix(in oklab, var(--color-secondary) 62%, var(--color-border));
+  text-decoration-style: dotted;
+}
+
+.md .md-link[data-link-kind="note"][data-note-link-status="unresolved"],
+.md .md-link[data-link-kind="note"][data-note-link-status="ambiguous"],
+.md .md-link[data-link-kind="note"][data-note-link-status="missing_heading"] {
+  background: color-mix(in oklab, var(--color-warn) 10%, transparent);
+  text-decoration-color: color-mix(in oklab, var(--color-warn) 66%, var(--color-border));
+}
+
+.md .md-wikilink-icon {
+  flex: 0 0 auto;
+  height: 0.82em;
+  position: relative;
+  top: 0.08em;
+  width: 0.82em;
+}
+
+.md .md-wikilink-label {
+  min-width: 0;
+}
+
+.md .md-wikilink-state {
+  color: var(--color-muted);
+  font-family: var(--font-mono);
+  font-size: 0.68em;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+
+.md .md-link[data-link-kind="anchor"],
+.claudesk-rich-markdown-editor .ProseMirror a[href^="#"] {
+  color: var(--color-secondary);
+  font-weight: 400;
+  text-decoration-color: var(--color-border);
+}
+
+.md .md-link:hover,
+.claudesk-rich-markdown-editor .ProseMirror a:hover {
+  background: color-mix(in oklab, var(--color-active) 12%, transparent);
+  color: var(--color-display);
+  text-decoration-color: var(--color-active);
+}
+
+.md.prose .md-image-figure {
+  margin: 1.25em auto;
+  max-width: 100%;
+  text-align: center;
+}
+
+.md.prose .md-image-frame {
+  display: flex;
+  justify-content: center;
+  max-width: 100%;
+}
+
+.md.prose .md-image-frame > .md-image {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  display: block;
+  max-height: 42rem;
+  max-width: min(100%, 47.5rem);
+  object-fit: contain;
+}
+
+.md.prose .md-image-frame > .md-image-missing,
+.md.prose .md-image-missing {
+  align-items: center;
+  color: var(--color-warn);
+  display: inline-flex;
+  font-family: var(--font-mono-family), Menlo, monospace;
+  font-size: 0.75rem;
+  justify-content: center;
+  min-height: 4rem;
+  min-width: min(100%, 14rem);
+  padding: 0.75rem 1rem;
+}
+
+.md.prose .md-image-figure figcaption {
+  color: var(--color-muted);
+  font-family: var(--font-content-family), Georgia, serif;
+  font-size: 0.95em;
+  line-height: 1.4;
+  margin-top: 0.5rem;
+}
+
+.md.prose :where(h1):not(:where([class~="not-prose"], [class~="not-prose"] *)) {
+  font-size: 1.375em;
+  font-weight: 600;
+  line-height: 1.2;
+}
+.md.prose :where(h2):not(:where([class~="not-prose"], [class~="not-prose"] *)) {
+  font-size: 1.1875em;
+  font-weight: 600;
+  line-height: 1.3;
+}
+.md.prose :where(h3):not(:where([class~="not-prose"], [class~="not-prose"] *)) {
+  font-size: 1.0625em;
+  font-weight: 600;
+  line-height: 1.35;
+}
+.md.prose :where(h4):not(:where([class~="not-prose"], [class~="not-prose"] *)) {
+  color: var(--color-display);
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.md .md-heading-foldable,
+.claudesk-rich-markdown-editor .ProseMirror .md-heading-foldable {
+  position: relative;
+}
+
+.md .md-heading-fold-toggle,
+.claudesk-rich-markdown-editor .ProseMirror .md-heading-fold-toggle {
+  align-items: center;
+  background: transparent;
+  border: 0;
+  border-radius: var(--control-radius);
+  color: var(--color-muted);
+  cursor: pointer;
+  display: inline-flex;
+  height: 1.35em;
+  justify-content: center;
+  left: calc(-1 * var(--claudesk-note-heading-fold-gutter, 1.65em));
+  margin-left: 0;
+  padding: 0;
+  position: absolute;
+  top: 0.08em;
+  width: 1.35em;
+  z-index: 2;
+}
+
+.md .md-heading-fold-toggle:hover,
+.md .md-heading-fold-toggle:focus-visible,
+.claudesk-rich-markdown-editor .ProseMirror .md-heading-fold-toggle:hover,
+.claudesk-rich-markdown-editor .ProseMirror .md-heading-fold-toggle:focus-visible {
+  background: var(--color-hover);
+  color: var(--color-display);
+  outline: none;
+}
+
+.md .md-heading-fold-toggle:focus-visible,
+.claudesk-rich-markdown-editor .ProseMirror .md-heading-fold-toggle:focus-visible {
+  box-shadow: 0 0 0 1px var(--color-secondary);
+}
+
+.md .md-heading-fold-toggle-icon,
+.claudesk-rich-markdown-editor .ProseMirror .md-heading-fold-toggle-icon {
+  display: block;
+  height: 0.9em;
+  transition: transform 120ms ease;
+  width: 0.9em;
+}
+
+.claudesk-rich-markdown-editor .ProseMirror span.md-heading-fold-toggle-icon::before {
+  border-bottom: 1.8px solid currentColor;
+  border-right: 1.8px solid currentColor;
+  content: "";
+  display: block;
+  height: 0.5em;
+  margin: 0.18em 0 0 0.12em;
+  transform: rotate(-45deg);
+  width: 0.5em;
+}
+
+.md .md-heading-fold-toggle[aria-expanded="true"] .md-heading-fold-toggle-icon,
+.claudesk-rich-markdown-editor .ProseMirror .md-heading-fold-toggle[aria-expanded="true"] .md-heading-fold-toggle-icon {
+  transform: rotate(90deg);
+}
+
+.md .md-heading-content,
+.claudesk-rich-markdown-editor .ProseMirror .md-heading-content {
+  min-width: 0;
+}
+
+.md .md-heading-collapsed-cue,
+.claudesk-rich-markdown-editor .ProseMirror .md-heading-collapsed-cue {
+  color: var(--color-muted);
+  display: inline;
+  font-family: var(--font-mono-family), Menlo, monospace;
+  font-size: 0.72em;
+  font-weight: 400;
+  margin-left: 0.35rem;
+  white-space: nowrap;
+}
+
+.claudesk-rich-markdown-editor .ProseMirror .claudesk-rich-heading-fold-hidden {
+  display: none !important;
+}
+
+.md.prose :where(code):not(:where([class~="not-prose"], [class~="not-prose"] *)) {
+  background-color: color-mix(in oklab, var(--color-display) 4%, var(--color-surface));
+  border: 1px solid color-mix(in oklab, var(--color-border) 82%, transparent);
+  border-radius: 0;
+  font-family: var(--font-mono-family), Menlo, monospace;
+  font-size: 0.8125em;
+  font-weight: 400;
+  padding: 0.075rem 0.25rem;
+}
+.md.prose :where(code)::before,
+.md.prose :where(code)::after {
+  content: none;
+}
+.md.prose :where(pre):not(:where([class~="not-prose"], [class~="not-prose"] *)) {
+  border-color: var(--color-border);
+  border-radius: 0;
+  border-width: 1px;
+}
+.md.prose :where(pre code):not(:where([class~="not-prose"], [class~="not-prose"] *)) {
+  background-color: transparent;
+  padding: 0;
+}
+.md.prose :where(blockquote):not(:where([class~="not-prose"], [class~="not-prose"] *)) {
+  background: color-mix(in oklab, var(--color-secondary) 7%, var(--color-surface));
+  border-inline-start-color: color-mix(in oklab, var(--color-secondary) 48%, var(--color-border));
+  border-inline-start-style: solid;
+  border-inline-start-width: 4px;
+  color: var(--color-primary);
+  font-style: normal;
+  font-weight: 400;
+  padding: 0.75rem 1rem 0.75rem 1.125rem;
+}
+.md.prose :where(blockquote > :first-child):not(:where([class~="not-prose"], [class~="not-prose"] *)) {
+  margin-top: 0;
+}
+.md.prose :where(blockquote > :last-child):not(:where([class~="not-prose"], [class~="not-prose"] *)) {
+  margin-bottom: 0;
+}
+.md.prose :where(blockquote p:first-of-type)::before,
+.md.prose :where(blockquote p:last-of-type)::after {
+  content: none;
+}
+.md ul ul { list-style-type: circle; }
+.md ul ul ul { list-style-type: square; }
+.md ol ol { list-style-type: lower-alpha; }
+.md ol ol ol { list-style-type: lower-roman; }
+
+/* Markdown: compact and project-description variants. */
+.md.md-compact p,
+.md.md-compact li > p {
+  margin-top: 0;
+  margin-bottom: 0;
+}
+.md.md-compact ul,
+.md.md-compact ol {
+  margin-top: 0.25rem;
+  margin-bottom: 0;
+}
+.md.md-compact li {
+  margin-top: 0.15rem;
+  margin-bottom: 0.15rem;
+}
+.md.md-project-description :where(h1, h2, h3, h4):not(:where([class~="not-prose"], [class~="not-prose"] *)) {
+  margin-top: 0.9rem;
+  margin-bottom: 0.45rem;
+}
+.md.md-project-description :where(hr):not(:where([class~="not-prose"], [class~="not-prose"] *)) {
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+}
+.md.md-project-description > :first-child {
+  margin-top: 0;
+}
+.md.md-project-description > :last-child {
+  margin-bottom: 0;
+}
+
+/* Markdown: task lists. */
+.md,
+.claudesk-rich-markdown-editor .ProseMirror {
+  --md-task-checkbox-size: 0.875rem;
+  --md-task-checkbox-bg: color-mix(in oklab, var(--color-surface) 78%, var(--color-bg));
+  --md-task-checkbox-border: var(--color-border);
+  --md-task-checkbox-checked-bg: var(--color-secondary);
+  --md-task-checkbox-checked-border: var(--color-secondary);
+  --md-task-checkbox-check: var(--color-bg);
+  --md-task-checked-color: var(--color-muted);
+}
+
+:root.light .md,
+:root.light .claudesk-rich-markdown-editor .ProseMirror {
+  --md-task-checked-color: color-mix(in oklab, var(--color-muted) 88%, var(--color-surface));
+}
+
+.md .task-list-item {
+  list-style: none;
+}
+.md .task-list-item:has(> input[type="checkbox"]:checked),
+.md .task-list-item:has(> p:first-child > input[type="checkbox"]:checked) {
+  color: var(--md-task-checked-color);
+}
+.md .task-list-item:has(> input[type="checkbox"]:checked) > :where(*):not(input, ul, ol),
+.md .task-list-item:has(> input[type="checkbox"]:checked) > :where(*):not(input, ul, ol) :where(*):not(input),
+.md .task-list-item:has(> p:first-child > input[type="checkbox"]:checked) > :where(*):not(input, ul, ol),
+.md .task-list-item:has(> p:first-child > input[type="checkbox"]:checked) > :where(*):not(input, ul, ol) :where(*):not(input) {
+  color: var(--md-task-checked-color);
+}
+.md .task-list-item:has(> input[type="checkbox"]:checked) li:not(:has(> input[type="checkbox"]:checked)):not(:has(> p:first-child > input[type="checkbox"]:checked)),
+.md .task-list-item:has(> p:first-child > input[type="checkbox"]:checked) li:not(:has(> input[type="checkbox"]:checked)):not(:has(> p:first-child > input[type="checkbox"]:checked)) {
+  color: var(--color-primary);
+}
+.md .task-list-item input[type="checkbox"] {
+  accent-color: var(--color-secondary);
+  height: var(--md-task-checkbox-size);
+  margin-inline-start: -1.25em;
+  margin-inline-end: 0.5rem;
+  vertical-align: -0.12em;
+  width: var(--md-task-checkbox-size);
+}
+.md .task-list-item input[type="checkbox"]:not(:disabled) {
+  cursor: pointer;
+}
+.md .task-list-item input[type="checkbox"]:focus-visible {
+  outline: 1px solid var(--color-secondary);
+  outline-offset: 2px;
+}
+
+/* Markdown: inline note styling. */
+.md mark,
+.claudesk-rich-markdown-editor .ProseMirror mark {
+  --claudesk-highlight-tone: var(--color-warn);
+  background: color-mix(in oklab, var(--claudesk-highlight-tone) 26%, transparent);
+  border-radius: 0;
+  box-decoration-break: clone;
+  color: inherit;
+  -webkit-box-decoration-break: clone;
+  padding: 0.08em 0.18em 0.1em;
+}
+.md mark[data-highlight-color="green"],
+.claudesk-rich-markdown-editor .ProseMirror mark[data-highlight-color="green"] {
+  --claudesk-highlight-tone: var(--color-success);
+}
+.md mark[data-highlight-color="blue"],
+.claudesk-rich-markdown-editor .ProseMirror mark[data-highlight-color="blue"] {
+  --claudesk-highlight-tone: var(--color-active);
+}
+.md mark[data-highlight-color="pink"],
+.claudesk-rich-markdown-editor .ProseMirror mark[data-highlight-color="pink"] {
+  --claudesk-highlight-tone: var(--color-accent);
+}
+.md ins,
+.claudesk-rich-markdown-editor .ProseMirror ins {
+  text-decoration-line: underline;
+  text-decoration-thickness: 0.08em;
+  text-underline-offset: 0.14em;
+}
+.md sub,
+.md sup,
+.claudesk-rich-markdown-editor .ProseMirror sub,
+.claudesk-rich-markdown-editor .ProseMirror sup {
+  font-size: 0.72em;
+  line-height: 1;
+  position: relative;
+  vertical-align: baseline;
+}
+.md sub,
+.claudesk-rich-markdown-editor .ProseMirror sub {
+  top: 0.12em;
+}
+.md sup,
+.claudesk-rich-markdown-editor .ProseMirror sup {
+  top: -0.28em;
+}
+.md a[data-footnote-ref],
+.claudesk-rich-markdown-editor .ProseMirror sup[data-type="footnote_reference"] {
+  background: color-mix(in oklab, var(--color-secondary) 10%, transparent);
+  border: 1px solid color-mix(in oklab, var(--color-secondary) 28%, var(--color-border));
+  color: var(--color-secondary);
+  font-family: var(--font-mono-family), Menlo, monospace;
+  font-size: 0.68em;
+  font-weight: 600;
+  line-height: 1;
+  padding: 0.02em 0.22em;
+  text-decoration: none;
+}
+.md a[data-footnote-ref]:hover,
+.claudesk-rich-markdown-editor .ProseMirror sup[data-type="footnote_reference"]:hover {
+  background: color-mix(in oklab, var(--color-secondary) 16%, transparent);
+  color: var(--color-display);
+}
+.claudesk-rich-markdown-editor .ProseMirror sup[data-type="footnote_reference"] {
+  top: -0.18em;
+}
+.claudesk-rich-markdown-editor .ProseMirror sup[data-type="footnote_reference"]::before {
+  content: "[^";
+}
+.claudesk-rich-markdown-editor .ProseMirror sup[data-type="footnote_reference"]::after {
+  content: "]";
+}
+.md [data-footnotes] {
+  border-top: 1px solid color-mix(in oklab, var(--color-border) 80%, transparent);
+  color: var(--color-secondary);
+  font-size: 0.9em;
+  margin-top: 2rem;
+  padding-top: 0.85rem;
+}
+.md [data-footnotes] ol {
+  margin-bottom: 0;
+  margin-top: 0.35rem;
+  padding-left: 1.35rem;
+}
+.md [data-footnotes] li {
+  margin-bottom: 0.35rem;
+  padding-left: 0.15rem;
+}
+.md [data-footnotes] p {
+  margin-bottom: 0.25rem;
+  margin-top: 0;
+}
+.md a[data-footnote-backref] {
+  color: var(--color-muted);
+  font-family: var(--font-mono-family), Menlo, monospace;
+  font-size: 0.85em;
+  margin-left: 0.2rem;
+  text-decoration: none;
+}
+.md a[data-footnote-backref]:hover {
+  color: var(--color-display);
+}
+
+/* Markdown: callouts. */
+.md .md-callout {
+  --md-callout-tone: var(--color-secondary);
+  --md-callout-bg: color-mix(in oklab, var(--md-callout-tone) 6%, var(--color-surface));
+  background: var(--md-callout-bg);
+  border: 1px solid color-mix(in oklab, var(--md-callout-tone) 22%, var(--color-border));
+  color: var(--color-primary);
+  margin: 1.25em 0;
+  padding: 0.75rem 1rem;
+}
+.md .md-callout[data-callout="note"] {
+  --md-callout-tone: var(--color-display);
+  --md-callout-bg: color-mix(in oklab, var(--color-display) 5%, var(--color-surface));
+}
+.md .md-callout[data-callout="info"] {
+  --md-callout-bg: color-mix(in oklab, var(--color-secondary) 8%, var(--color-surface));
+}
+.md .md-callout[data-callout="important"] {
+  --md-callout-tone: color-mix(in oklab, var(--color-display) 65%, var(--color-accent));
+  --md-callout-bg: color-mix(in oklab, var(--color-display) 7%, color-mix(in oklab, var(--color-accent) 5%, var(--color-surface)));
+}
+.md .md-callout[data-callout="danger"] {
+  --md-callout-tone: var(--color-accent);
+  --md-callout-bg: color-mix(in oklab, var(--color-accent) 9%, var(--color-surface));
+}
+.md .md-callout[data-callout="tip"],
+.md .md-callout[data-callout="todo"] {
+  --md-callout-tone: var(--color-success);
+  --md-callout-bg: color-mix(in oklab, var(--color-success) 8%, var(--color-surface));
+}
+.md .md-callout[data-callout="warning"] {
+  --md-callout-tone: var(--color-warn);
+  --md-callout-bg: color-mix(in oklab, var(--color-warn) 10%, var(--color-surface));
+}
+.md .md-callout[data-callout="question"] {
+  --md-callout-bg: color-mix(in oklab, var(--color-secondary) 10%, var(--color-surface));
+}
+.md .md-callout[data-callout="summary"] {
+  --md-callout-tone: var(--color-muted);
+  --md-callout-bg: color-mix(in oklab, var(--color-muted) 7%, var(--color-surface));
+}
+.md .md-callout[data-callout="tldr"] {
+  --md-callout-tone: color-mix(in oklab, var(--color-secondary) 60%, var(--color-success));
+  --md-callout-bg: color-mix(in oklab, var(--color-secondary) 8%, var(--color-surface));
+}
+.md .md-callout[data-callout="example"] {
+  --md-callout-tone: color-mix(in oklab, var(--color-display) 45%, var(--color-secondary));
+  --md-callout-bg: color-mix(in oklab, var(--color-secondary) 7%, color-mix(in oklab, var(--color-display) 3%, var(--color-surface)));
+}
+.md .md-callout[data-callout="quote"] {
+  --md-callout-tone: var(--color-muted);
+  --md-callout-bg: color-mix(in oklab, var(--color-border) 16%, var(--color-surface));
+}
+.md .md-callout-header {
+  align-items: center;
+  color: var(--md-callout-tone);
+  display: flex;
+  font-family: var(--font-mono-family), Menlo, monospace;
+  gap: 0.4rem;
+  line-height: 1.25;
+  margin: 0 0 0.5rem;
+}
+.md .md-callout-icon {
+  flex: 0 0 auto;
+  height: 0.95rem;
+  width: 0.95rem;
+}
+.md .md-callout-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+.md .md-callout-body {
+  display: flow-root;
+}
+.md .md-callout-body > :first-child {
+  margin-top: 0;
+}
+.md .md-callout-body > :last-child {
+  margin-bottom: 0;
+}
+
+/* Markdown: code highlighting and math. */
+.md .md-code-block {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  color: var(--color-primary);
+  font-family: var(--font-mono-family), Menlo, monospace;
+  font-size: 0.875rem;
+  line-height: 1.6;
+  margin: 1rem 0;
+  overflow: hidden;
+}
+.md .md-code-block-toolbar {
+  align-items: center;
+  border-bottom: 1px solid var(--color-border);
+  display: flex;
+  gap: 0.5rem;
+  justify-content: space-between;
+  min-height: 2rem;
+  padding: 0.25rem 0.35rem 0.25rem 0.5rem;
+}
+.md .md-code-block-language,
+.md .md-code-block-copy {
+  color: var(--color-secondary);
+  font-family: var(--font-mono-family), Menlo, monospace;
+  font-size: 0.6875rem;
+  line-height: 1;
+  text-transform: uppercase;
+}
+.md .md-code-block-copy {
+  align-items: center;
+  border-radius: var(--control-radius);
+  display: inline-flex;
+  gap: 0.3rem;
+  height: 1.45rem;
+  padding: 0 0.45rem;
+}
+.md .md-code-block-copy:hover,
+.md .md-code-block-copy:focus-visible {
+  background: var(--color-hover);
+  color: var(--color-display);
+  outline: none;
+}
+.md .md-code-block-body {
+  overflow-x: auto;
+  padding: 0.75rem 0.65rem;
+}
+.md .md-code-block pre {
+  background: transparent !important;
+  border: 0;
+  color: inherit;
+  margin: 0;
+  overflow: visible;
+  padding: 0;
+}
+.md .md-code-block code {
+  background: transparent;
+  border: 0;
+  color: inherit;
+  display: block;
+  font-family: var(--font-mono-family), Menlo, monospace;
+  padding: 0;
+}
+.md .md-code-block .line {
+  min-height: 1.625em;
+}
+.md .md-mermaid-loading {
+  align-items: center;
+  color: var(--color-muted);
+  display: flex;
+  font-family: var(--font-mono-family), Menlo, monospace;
+  font-size: 0.75rem;
+  justify-content: center;
+  min-height: 8rem;
+  text-transform: uppercase;
+}
+.md .md-mermaid-svg {
+  overflow-x: auto;
+  padding: 0.25rem;
+}
+.md .md-mermaid-svg svg {
+  display: block;
+  height: auto;
+  margin: 0 auto;
+  max-width: 100%;
+}
+.md .md-mermaid-error {
+  color: var(--color-primary);
+  display: grid;
+  gap: 0.5rem;
+  overflow-wrap: anywhere;
+}
+.md .md-mermaid-error-label {
+  align-items: center;
+  color: var(--color-accent);
+  display: inline-flex;
+  font-family: var(--font-mono-family), Menlo, monospace;
+  font-size: 0.75rem;
+  gap: 0.35rem;
+  line-height: 1.2;
+  text-transform: uppercase;
+}
+.md .md-mermaid-error p {
+  color: var(--color-secondary);
+  font-family: var(--font-ui-family), system-ui, sans-serif;
+  font-size: 0.8125rem;
+  line-height: 1.4;
+  margin: 0;
+}
+.md .md-mermaid-error pre {
+  background: color-mix(in oklab, var(--color-accent) 8%, var(--color-surface));
+  border: 1px solid color-mix(in oklab, var(--color-accent) 35%, var(--color-border));
+  color: var(--color-primary);
+  margin: 0;
+  max-height: 14rem;
+  overflow: auto;
+  padding: 0.625rem;
+}
+.md .md-excalidraw,
+.claudesk-rich-excalidraw-preview .md-excalidraw {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  color: var(--color-primary);
+  margin: 1rem 0;
+  overflow: hidden;
+}
+.md .md-excalidraw-toolbar,
+.claudesk-rich-excalidraw-preview .md-excalidraw-toolbar {
+  align-items: center;
+  border-bottom: 1px solid var(--color-border);
+  display: flex;
+  gap: 0.75rem;
+  justify-content: space-between;
+  min-height: 2.25rem;
+  padding: 0.35rem 0.4rem 0.35rem 0.65rem;
+}
+.md .md-excalidraw-title,
+.claudesk-rich-excalidraw-preview .md-excalidraw-title {
+  color: var(--color-display);
+  font-family: var(--font-mono-family), Menlo, monospace;
+  font-size: 0.75rem;
+  line-height: 1.2;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+.md .md-excalidraw-meta,
+.claudesk-rich-excalidraw-preview .md-excalidraw-meta {
+  color: var(--color-muted);
+  font-family: var(--font-mono-family), Menlo, monospace;
+  font-size: 0.6875rem;
+  line-height: 1.25;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+.md .md-excalidraw-actions,
+.claudesk-rich-excalidraw-preview .md-excalidraw-actions {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.15rem;
+  justify-content: flex-end;
+}
+.md .md-excalidraw-body,
+.claudesk-rich-excalidraw-preview .md-excalidraw-body {
+  min-height: 12rem;
+  overflow: auto;
+  padding: 0.75rem;
+}
+.md .md-excalidraw-status,
+.md .md-excalidraw-error,
+.claudesk-rich-excalidraw-preview .md-excalidraw-status,
+.claudesk-rich-excalidraw-preview .md-excalidraw-error {
+  align-items: center;
+  color: var(--color-muted);
+  display: flex;
+  font-family: var(--font-mono-family), Menlo, monospace;
+  font-size: 0.75rem;
+  gap: 0.4rem;
+  justify-content: center;
+  min-height: 10rem;
+  text-transform: uppercase;
+}
+.md .md-excalidraw-error,
+.claudesk-rich-excalidraw-preview .md-excalidraw-error {
+  color: var(--color-accent);
+  justify-content: flex-start;
+  min-height: auto;
+}
+.md .md-excalidraw-svg,
+.claudesk-rich-excalidraw-preview .md-excalidraw-svg {
+  display: flex;
+  justify-content: center;
+}
+.md .md-excalidraw-svg svg,
+.claudesk-rich-excalidraw-preview .md-excalidraw-svg svg {
+  display: block;
+  height: auto;
+  max-height: 36rem;
+  max-width: 100%;
+}
+.claudesk-rich-markdown-editor .ProseMirror .milkdown-code-block .claudesk-rich-excalidraw-preview {
+  margin: 0.5rem 0.5rem 0.75rem;
+}
+.claudesk-rich-markdown-editor .ProseMirror .milkdown-code-block .claudesk-rich-excalidraw-preview .md-excalidraw {
+  margin: 0;
+}
+.claudesk-rich-markdown-editor .ProseMirror .milkdown-code-block .claudesk-rich-excalidraw-preview .md-excalidraw-body {
+  min-height: 8rem;
+}
+.claudesk-rich-markdown-editor .ProseMirror .milkdown-code-block .claudesk-rich-excalidraw-preview .md-excalidraw-status {
+  min-height: 7rem;
+}
+.md pre.shiki {
+  border-color: var(--color-border);
+}
+.md pre.shiki code {
+  background: transparent;
+  color: inherit;
+  display: block;
+  font-family: var(--font-mono-family), Menlo, monospace;
+  padding: 0;
+}
+.md pre.shiki .line {
+  min-height: 1.625em;
+}
+.md .katex { color: var(--color-display); font-size: 1em; }
+.md .katex-display {
+  margin: 0.75rem 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding-bottom: 0.15rem;
+}
+
+/* Milkdown/ProseMirror rich markdown editor. */
+.claudesk-rich-markdown-editor {
+  --default-cell-min-width: 8rem;
+  counter-reset: katexEqnNo mmlEqnNo;
+  cursor: text;
+}
+
+.claudesk-rich-markdown-editor .ProseMirror {
+  border: 0;
+  border-style: none;
+  caret-color: var(--color-display);
+  min-height: 16rem;
+  outline: none;
+  padding: 0.125rem 0.5rem var(--claudesk-note-end-scroll-space, 45dvh);
+  position: relative;
+  white-space: break-spaces;
+  word-wrap: break-word;
+}
+
+.claudesk-note-content .claudesk-rich-markdown-editor .ProseMirror {
+  padding-left: 0;
+}
+
+.claudesk-rich-markdown-editor .ProseMirror-focused {
+  outline: none;
+}
+
+.claudesk-rich-markdown-editor-field {
+  position: relative;
+}
+
+.claudesk-rich-markdown-editor-field:focus-within {
+  border-color: var(--color-secondary);
+  box-shadow: 0 0 0 1px var(--color-secondary);
+}
+
+.claudesk-rich-markdown-editor-field[data-invalid="true"] {
+  border-color: var(--color-accent);
+}
+
+.claudesk-rich-markdown-editor-field .ProseMirror {
+  min-height: inherit;
+  padding: 0.5rem 0.75rem;
+}
+
+.claudesk-rich-markdown-editor-field[data-placeholder][data-empty="true"]::before {
+  color: var(--color-muted);
+  content: attr(data-placeholder);
+  left: 0.75rem;
+  pointer-events: none;
+  position: absolute;
+  top: 0.5rem;
+  z-index: 1;
+}
+
+.claudesk-rich-markdown-editor .ProseMirror ::selection {
+  background: var(--color-hover);
+}
+
+.claudesk-rich-markdown-editor .ProseMirror .claudesk-note-find-match,
+.cm-content .claudesk-note-find-match {
+  background: color-mix(in oklab, var(--color-hover) 56%, transparent);
+  color: inherit;
+}
+
+.claudesk-rich-markdown-editor .ProseMirror .claudesk-note-find-active,
+.cm-content .claudesk-note-find-active {
+  background: var(--color-hover);
+  color: var(--color-display);
+}
+
+.claudesk-rich-markdown-editor .ProseMirror blockquote ::selection,
+.claudesk-rich-markdown-editor .ProseMirror .claudesk-rich-callout ::selection {
+  background: color-mix(in oklab, var(--color-active) 46%, var(--color-hover));
+  color: var(--color-display);
+}
+
+.claudesk-rich-markdown-editor .ProseMirror img.ProseMirror-separator {
+  border: none !important;
+  display: inline !important;
+  margin: 0 !important;
+}
+
+.claudesk-rich-markdown-editor .ProseMirror p:first-child,
+.claudesk-rich-markdown-editor .ProseMirror h1:first-child,
+.claudesk-rich-markdown-editor .ProseMirror h2:first-child,
+.claudesk-rich-markdown-editor .ProseMirror h3:first-child,
+.claudesk-rich-markdown-editor .ProseMirror pre:first-child,
+.claudesk-rich-markdown-editor .ProseMirror blockquote:first-child {
+  margin-top: 0;
+}
+
+.claudesk-rich-markdown-editor .ProseMirror pre {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 0;
+  color: var(--color-primary);
+  font-family: var(--font-mono-family), Menlo, monospace;
+  font-size: 0.875rem;
+  line-height: 1.6;
+  overflow-x: auto;
+  padding: 0.75rem 1rem;
+  white-space: pre-wrap;
+}
+
+.claudesk-rich-markdown-editor .ProseMirror code {
+  font-family: var(--font-mono-family), Menlo, monospace;
+}
+
+.claudesk-rich-markdown-editor .ProseMirror .milkdown-image-inline {
+  display: inline-flex;
+  max-width: 100%;
+  vertical-align: middle;
+}
+
+.claudesk-rich-markdown-editor .ProseMirror .milkdown-image-inline img.image-inline {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  display: inline-block;
+  height: auto;
+  max-height: 32rem;
+  max-width: min(100%, 36rem);
+  object-fit: contain;
+  vertical-align: middle;
+}
+
+.claudesk-rich-markdown-editor .ProseMirror .milkdown-image-inline.selected img.image-inline {
+  outline: 1px solid var(--color-secondary);
+  outline-offset: 2px;
+}
+
+.claudesk-rich-markdown-editor .ProseMirror .milkdown-image-inline .image-edit {
+  align-items: center;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  color: var(--color-primary);
+  display: inline-grid;
+  font-family: var(--font-ui-family), system-ui, sans-serif;
+  gap: 0.5rem;
+  grid-template-columns: auto minmax(0, 1fr) auto auto;
+  line-height: 1.3;
+  margin: 0.125rem 0;
+  max-width: 100%;
+  padding: 0.375rem;
+  vertical-align: middle;
+  width: min(100%, 34rem);
+}
+
+.claudesk-rich-markdown-editor .ProseMirror .milkdown-image-inline .image-icon {
+  color: var(--color-muted);
+  font-family: var(--font-mono-family), Menlo, monospace;
+  font-size: 0.6875rem;
+  letter-spacing: 0;
+}
+
+.claudesk-rich-markdown-editor .ProseMirror .milkdown-image-inline .link-importer {
+  min-width: 0;
+  position: relative;
+}
+
+.claudesk-rich-markdown-editor .ProseMirror .milkdown-image-inline .link-input-area {
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  color: var(--color-primary);
+  font: inherit;
+  min-width: 12rem;
+  outline: none;
+  padding: 0.35rem 0.5rem;
+  width: 100%;
+}
+
+.claudesk-rich-markdown-editor .ProseMirror .milkdown-image-inline .link-importer.focus .link-input-area,
+.claudesk-rich-markdown-editor .ProseMirror .milkdown-image-inline .link-input-area:focus {
+  border-color: var(--color-secondary);
+}
+
+.claudesk-rich-markdown-editor .ProseMirror .milkdown-image-inline .placeholder {
+  align-items: center;
+  color: var(--color-muted);
+  display: flex;
+  font-size: 0.8125rem;
+  inset: 0;
+  padding: 0.35rem 0.5rem;
+  pointer-events: none;
+  position: absolute;
+}
+
+.claudesk-rich-markdown-editor .ProseMirror .milkdown-image-inline .hidden,
+.claudesk-rich-markdown-editor .ProseMirror .milkdown-image-inline .uploader {
+  display: none;
+}
+
+.claudesk-rich-markdown-editor .ProseMirror .milkdown-image-inline .image-preview {
+  border-left: 1px solid var(--color-border);
+  padding-left: 0.5rem;
+}
+
+.claudesk-rich-markdown-editor .ProseMirror .milkdown-image-inline .image-preview img {
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  display: block;
+  max-height: 5rem;
+  max-width: 7rem;
+  object-fit: contain;
+}
+
+.claudesk-rich-markdown-editor .ProseMirror .milkdown-image-inline .confirm {
+  border-left: 1px solid var(--color-border);
+  color: var(--color-secondary);
+  cursor: pointer;
+  font-family: var(--font-mono-family), Menlo, monospace;
+  font-size: 0.75rem;
+  padding: 0.35rem 0.45rem;
+}
+
+.claudesk-rich-markdown-editor .ProseMirror .milkdown-image-inline .confirm:hover {
+  background: var(--color-hover);
+  color: var(--color-display);
+}
+
+.claudesk-rich-markdown-editor .ProseMirror .milkdown-image-block {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin: 1.25rem auto;
+  max-width: 100%;
+  position: relative;
+}
+
+.claudesk-rich-markdown-editor .ProseMirror .milkdown-image-block .image-wrapper {
+  display: inline-block;
+  font-size: 0;
+  justify-content: center;
+  line-height: 0;
+  max-width: 100%;
+  position: relative;
+}
+
+.claudesk-rich-markdown-editor .ProseMirror .milkdown-image-block img[data-type="image-block"] {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  display: block;
+  max-width: min(100%, 47.5rem);
+  object-fit: contain;
+}
+
+.claudesk-rich-markdown-editor .ProseMirror .milkdown-image-block .image-missing {
+  align-items: center;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  color: var(--color-warn);
+  display: none;
+  font-family: var(--font-mono-family), Menlo, monospace;
+  font-size: 0.75rem;
+  justify-content: center;
+  line-height: 1.3;
+  min-height: 4rem;
+  min-width: min(100%, 14rem);
+  padding: 0.75rem 1rem;
+}
+
+.claudesk-rich-markdown-editor .ProseMirror .milkdown-image-block[data-image-state="missing"] img[data-type="image-block"] {
+  display: none;
+}
+
+.claudesk-rich-markdown-editor .ProseMirror .milkdown-image-block[data-image-state="missing"] .image-missing {
+  display: flex;
+}
+
+.claudesk-rich-markdown-editor .ProseMirror .milkdown-image-block.selected img[data-type="image-block"] {
+  outline: 1px solid var(--color-secondary);
+  outline-offset: 2px;
+}
+
+.claudesk-rich-markdown-editor .ProseMirror .milkdown-image-block .operation {
+  opacity: 0;
+  position: absolute;
+  right: 0.625rem;
+  top: 0.625rem;
+  transition: opacity 160ms ease-out, transform 160ms ease-out;
+  transform: translateY(-0.125rem);
+  z-index: 2;
+}
+
+.claudesk-rich-markdown-editor .ProseMirror .milkdown-image-block:hover .operation,
+.claudesk-rich-markdown-editor .ProseMirror .milkdown-image-block.selected .operation {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.claudesk-rich-markdown-editor .ProseMirror .milkdown-image-block .operation-item {
+  align-items: center;
+  background: color-mix(in oklch, var(--color-bg) 86%, transparent);
+  border: 1px solid color-mix(in oklch, var(--color-border) 70%, var(--color-display));
+  border-radius: 999px;
+  color: var(--color-secondary);
+  cursor: pointer;
+  display: inline-flex;
+  height: 2rem;
+  justify-content: center;
+  width: 2rem;
+}
+
+.claudesk-rich-markdown-editor .ProseMirror .milkdown-image-block .operation-item:hover {
+  background: var(--color-bg);
+  border-color: var(--color-secondary);
+  color: var(--color-display);
+}
+
+.claudesk-rich-markdown-editor .ProseMirror .milkdown-image-block .operation-item svg {
+  height: 0.875rem;
+  width: 0.875rem;
+}
+
+.claudesk-rich-markdown-editor .ProseMirror .milkdown-image-block .image-resize-handle {
+  align-items: center;
+  bottom: 0;
+  cursor: ns-resize;
+  display: flex;
+  height: 1.375rem;
+  justify-content: center;
+  left: 50%;
+  opacity: 0;
+  position: absolute;
+  touch-action: none;
+  transform: translate(-50%, 50%);
+  transition: opacity 160ms ease-out, transform 160ms ease-out;
+  width: min(8rem, 72%);
+  z-index: 2;
+}
+
+.claudesk-rich-markdown-editor .ProseMirror .milkdown-image-block .image-resize-handle::before {
+  background: color-mix(in oklch, var(--color-display) 82%, var(--color-bg));
+  border-radius: 999px;
+  content: "";
+  display: block;
+  height: 0.3125rem;
+  width: 6rem;
+}
+
+.claudesk-rich-markdown-editor .ProseMirror .milkdown-image-block:hover .image-resize-handle,
+.claudesk-rich-markdown-editor .ProseMirror .milkdown-image-block.selected .image-resize-handle {
+  opacity: 1;
+  transform: translate(-50%, 50%) scaleX(1);
+}
+
+.claudesk-rich-markdown-editor .ProseMirror .milkdown-image-block .caption-input {
+  background: transparent;
+  border: 0;
+  border-bottom: 1px solid transparent;
+  color: var(--color-secondary);
+  font-family: var(--font-content-family), Georgia, serif;
+  font-size: 0.95rem;
+  line-height: 1.4;
+  max-width: min(100%, 42rem);
+  min-height: 1.55rem;
+  outline: none;
+  padding: 0.125rem 0.25rem;
+  text-align: center;
+  white-space: pre-wrap;
+  width: 100%;
+}
+
+.claudesk-rich-markdown-editor .ProseMirror .milkdown-image-block[data-caption-visible="false"] .caption-input {
+  display: none;
+}
+
+.claudesk-rich-markdown-editor .ProseMirror .milkdown-image-block .caption-input[data-empty="true"]::before {
+  content: attr(data-placeholder);
+  color: var(--color-muted);
+  pointer-events: none;
+}
+
+.claudesk-rich-markdown-editor .ProseMirror .milkdown-image-block .caption-input:focus {
+  border-bottom-color: var(--color-secondary);
+  color: var(--color-primary);
+}
+
+.claudesk-rich-markdown-editor .ProseMirror .milkdown-image-block .caption-input strong {
+  color: var(--color-primary);
+  font-weight: 600;
+}
+
+.claudesk-rich-image-tooltip,
+.claudesk-rich-link-tooltip,
+.claudesk-rich-footnote-tooltip {
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  color: var(--color-primary);
+  font-family: var(--font-ui-family), system-ui, sans-serif;
+  line-height: 1.4;
+  padding: 0.75rem;
+  position: absolute;
+  width: min(24rem, calc(100vw - 2rem));
+  z-index: 60;
+}
+
+.claudesk-rich-image-tooltip[data-show="false"],
+.claudesk-rich-link-tooltip[data-show="false"],
+.claudesk-rich-footnote-tooltip[data-show="false"] {
+  display: none;
+}
+
+.claudesk-rich-image-tooltip-form,
+.claudesk-rich-link-tooltip-form,
+.claudesk-rich-footnote-tooltip-form {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.claudesk-rich-image-tooltip-fields,
+.claudesk-rich-link-tooltip-fields {
+  display: grid;
+  gap: 0.625rem;
+}
+
+.claudesk-rich-image-tooltip-actions,
+.claudesk-rich-link-tooltip-actions,
+.claudesk-rich-footnote-tooltip-actions {
+  display: flex;
+  gap: 0.375rem;
+  justify-content: flex-end;
+  padding-top: 0.125rem;
+}
+
+.claudesk-rich-image-tooltip [data-slot="field-label"],
+.claudesk-rich-link-tooltip [data-slot="field-label"],
+.claudesk-rich-footnote-tooltip [data-slot="field-label"] {
+  color: var(--color-secondary);
+  font-size: 0.6875rem;
+  line-height: 1.2;
+}
+
+.claudesk-rich-image-tooltip input,
+.claudesk-rich-link-tooltip input,
+.claudesk-rich-footnote-tooltip textarea {
+  font-size: 0.8125rem;
+  line-height: 1.35;
+}
+
+.claudesk-rich-image-tooltip [data-slot="field-message"],
+.claudesk-rich-link-tooltip [data-slot="field-message"] {
+  font-size: 0.6875rem;
+  line-height: 1.25;
+  margin-top: 0;
+}
+
+.claudesk-rich-image-tooltip [data-slot="button"],
+.claudesk-rich-link-tooltip [data-slot="button"],
+.claudesk-rich-footnote-tooltip [data-slot="button"] {
+  font-size: 0.75rem;
+  line-height: 1;
+}
+
+.claudesk-rich-paper-link-tooltip {
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  color: var(--color-primary);
+  font-family: var(--font-ui-family), system-ui, sans-serif;
+  line-height: 1.4;
+  padding: 0.5rem;
+  position: absolute;
+  width: min(28rem, calc(100vw - 2rem));
+  z-index: 60;
+}
+
+.claudesk-rich-paper-link-tooltip[data-show="false"] {
+  display: none;
+}
+
+.claudesk-rich-paper-link-tooltip-form {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.claudesk-rich-paper-link-tooltip [data-slot="combobox-input"] {
+  font-size: 0.8125rem;
+  line-height: 1.35;
+}
+
+.claudesk-rich-emoji-tooltip {
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  box-shadow: 0 8px 24px color-mix(in oklab, var(--color-primary) 14%, transparent);
+  color: var(--color-primary);
+  font-family: var(--font-ui-family), system-ui, sans-serif;
+  line-height: 1.4;
+  padding: 0.5rem;
+  position: absolute;
+  width: min(22rem, calc(100vw - 2rem));
+  z-index: 60;
+}
+
+.claudesk-rich-emoji-tooltip[data-show="false"] {
+  display: none;
+}
+
+.claudesk-rich-emoji-picker-root {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.claudesk-rich-emoji-picker-search-row {
+  align-items: center;
+  display: flex;
+  gap: 0.375rem;
+}
+
+.claudesk-rich-emoji-picker-search {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--control-radius);
+  color: var(--color-primary);
+  flex: 1 1 auto;
+  font-family: var(--font-ui-family), system-ui, sans-serif;
+  font-size: 0.8125rem;
+  height: 2rem;
+  line-height: 1.35;
+  min-width: 0;
+  padding: 0 0.625rem;
+}
+
+.claudesk-rich-emoji-picker-search:focus {
+  border-color: var(--color-secondary);
+  outline: 2px solid color-mix(in oklab, var(--color-active) 34%, transparent);
+  outline-offset: 1px;
+}
+
+.claudesk-rich-emoji-picker-search::placeholder {
+  color: var(--color-muted);
+}
+
+.claudesk-rich-emoji-picker-skin {
+  align-items: center;
+  background: transparent;
+  border: 1px solid var(--color-border);
+  border-radius: var(--control-radius);
+  color: var(--color-primary);
+  display: inline-flex;
+  flex: 0 0 2rem;
+  font-family: var(--frimousse-emoji-font);
+  font-size: 1rem;
+  height: 2rem;
+  justify-content: center;
+  padding: 0;
+}
+
+.claudesk-rich-emoji-picker-skin:hover {
+  background: var(--color-hover);
+  color: var(--color-display);
+}
+
+.claudesk-rich-emoji-picker-skin:focus {
+  background: var(--color-hover);
+  color: var(--color-display);
+  outline: 2px solid color-mix(in oklab, var(--color-active) 34%, transparent);
+  outline-offset: 1px;
+}
+
+.claudesk-rich-emoji-picker-skin:focus:not(:focus-visible) {
+  outline: none;
+}
+
+.claudesk-rich-emoji-picker-viewport {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--control-radius);
+  height: 15rem;
+  overflow: hidden;
+}
+
+.claudesk-rich-emoji-picker-list {
+  padding-bottom: 0.25rem;
+}
+
+.claudesk-rich-emoji-picker-category {
+  background: var(--color-surface);
+  color: var(--color-muted);
+  font-family: var(--font-mono-family), Menlo, monospace;
+  font-size: 0.6875rem;
+  line-height: 1.2;
+  padding: 0.5rem 0.5rem 0.25rem;
+  text-transform: uppercase;
+}
+
+.claudesk-rich-emoji-picker-row {
+  display: flex;
+  gap: 0.125rem;
+  padding: 0 0.25rem;
+  scroll-margin-block: 0.25rem;
+}
+
+.claudesk-rich-emoji-picker-emoji {
+  align-items: center;
+  background: transparent;
+  border: 0;
+  border-radius: var(--control-radius);
+  color: var(--color-primary);
+  display: inline-flex;
+  font-family: var(--frimousse-emoji-font);
+  font-size: 1.125rem;
+  height: 2rem;
+  justify-content: center;
+  padding: 0;
+  width: 2rem;
+}
+
+.claudesk-rich-emoji-picker-emoji:hover,
+.claudesk-rich-emoji-picker-emoji[data-active] {
+  background: var(--color-hover);
+  color: var(--color-display);
+}
+
+.claudesk-rich-emoji-picker-emoji:focus {
+  outline: 2px solid color-mix(in oklab, var(--color-active) 34%, transparent);
+  outline-offset: 1px;
+}
+
+.claudesk-rich-emoji-picker-status {
+  align-items: center;
+  color: var(--color-muted);
+  display: flex;
+  font-family: var(--font-mono-family), Menlo, monospace;
+  font-size: 0.6875rem;
+  inset: 0;
+  justify-content: center;
+  line-height: 1.2;
+  padding: 1rem;
+  position: absolute;
+  text-transform: uppercase;
+}
+
+.claudesk-rich-emoji-picker-active {
+  align-items: center;
+  color: var(--color-secondary);
+  display: flex;
+  font-size: 0.75rem;
+  gap: 0.375rem;
+  min-height: 1.25rem;
+}
+
+.claudesk-rich-emoji-picker-active span:first-child {
+  color: var(--color-display);
+  font-family: var(--frimousse-emoji-font);
+  font-size: 1rem;
+}
+
+.claudesk-rich-markdown-editor .ProseMirror .milkdown-code-block {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  color: var(--color-primary);
+  font-family: var(--font-mono-family), Menlo, monospace;
+  font-size: 0.875rem;
+  line-height: 1.6;
+  margin: 1rem 0;
+  overflow: hidden;
+}
+
+.claudesk-rich-markdown-editor .ProseMirror .milkdown-code-block.selected {
+  outline: 1px solid var(--color-secondary);
+  outline-offset: 2px;
+}
+
+.claudesk-rich-markdown-editor .ProseMirror .milkdown-code-block.claudesk-rich-excalidraw-block {
+  background: transparent;
+  border: 0;
+  overflow: visible;
+}
+
+.claudesk-rich-markdown-editor .ProseMirror .milkdown-code-block.claudesk-rich-excalidraw-block.selected {
+  outline: none;
+}
+
+.claudesk-rich-markdown-editor .ProseMirror .milkdown-code-block.claudesk-rich-excalidraw-block.selected .md-excalidraw {
+  outline: 1px solid var(--color-secondary);
+  outline-offset: 2px;
+}
+
+.claudesk-rich-markdown-editor .ProseMirror .milkdown-code-block.claudesk-rich-excalidraw-block .tools,
+.claudesk-rich-markdown-editor .ProseMirror .milkdown-code-block.claudesk-rich-excalidraw-block .codemirror-host,
+.claudesk-rich-markdown-editor .ProseMirror .milkdown-code-block.claudesk-rich-excalidraw-block .preview-panel {
+  display: none;
+}
+
+.claudesk-rich-markdown-editor .ProseMirror .milkdown-code-block.claudesk-rich-excalidraw-block .claudesk-rich-excalidraw-preview {
+  margin: 0;
+}
+
+.claudesk-rich-markdown-editor .ProseMirror .milkdown-code-block .tools {
+  align-items: center;
+  border-bottom: 1px solid var(--color-border);
+  display: flex;
+  gap: 0.5rem;
+  justify-content: space-between;
+  min-height: 2rem;
+  padding: 0.25rem 0.35rem 0.25rem 0.5rem;
+}
+
+.claudesk-rich-markdown-editor .ProseMirror .milkdown-code-block .tools-button-group {
+  align-items: center;
+  display: flex;
+  gap: 0.25rem;
+}
+
+.claudesk-rich-markdown-editor .ProseMirror .milkdown-code-block .claudesk-rich-code-delete-host {
+  display: inline-flex;
+}
+
+.claudesk-rich-markdown-editor .ProseMirror .milkdown-code-block button.claudesk-rich-code-delete {
+  color: var(--color-accent);
+  height: 1.75rem;
+  min-width: 4.5rem;
+  padding: 0 0.55rem;
+}
+
+.claudesk-rich-markdown-editor .ProseMirror .milkdown-code-block button {
+  align-items: center;
+  border-radius: var(--control-radius);
+  color: var(--color-secondary);
+  display: inline-flex;
+  font-family: var(--font-mono-family), Menlo, monospace;
+  font-size: 0.6875rem;
+  gap: 0.3rem;
+  height: 1.45rem;
+  line-height: 1;
+  padding: 0 0.45rem;
+  text-transform: uppercase;
+}
+
+.claudesk-rich-markdown-editor .ProseMirror .milkdown-code-block button:hover,
+.claudesk-rich-markdown-editor .ProseMirror .milkdown-code-block button[data-expanded="true"] {
+  background: var(--color-hover);
+  color: var(--color-display);
+}
+
+.claudesk-rich-markdown-editor .ProseMirror .milkdown-code-block .milkdown-icon {
+  align-items: center;
+  display: inline-flex;
+  font-size: 0.75rem;
+  height: 0.875rem;
+  justify-content: center;
+  line-height: 1;
+  min-width: 0.875rem;
+}
+
+.claudesk-rich-markdown-editor .ProseMirror .milkdown-code-block .codemirror-host {
+  overflow-x: auto;
+  padding: 0.75rem 0.65rem;
+}
+
+.claudesk-rich-markdown-editor .ProseMirror .milkdown-code-block .codemirror-host.hidden {
+  display: none;
+}
+
+.claudesk-rich-markdown-editor .ProseMirror .milkdown-code-block .preview-panel {
+  border-top: 1px solid var(--color-border);
+  display: grid;
+  gap: 0;
+}
+
+.claudesk-rich-markdown-editor .ProseMirror .milkdown-code-block .preview-divider {
+  display: none;
+}
+
+.claudesk-rich-markdown-editor .ProseMirror .milkdown-code-block .preview-label {
+  border-bottom: 1px solid var(--color-border);
+  color: var(--color-muted);
+  font-family: var(--font-mono-family), Menlo, monospace;
+  font-size: 0.6875rem;
+  line-height: 1;
+  padding: 0.5rem 0.65rem;
+  text-transform: uppercase;
+}
+
+.claudesk-rich-markdown-editor .ProseMirror .milkdown-code-block .preview {
+  min-height: 8rem;
+  overflow-x: auto;
+  padding: 0.75rem 0.65rem;
+}
+
+.claudesk-rich-markdown-editor .ProseMirror .milkdown-code-block .claudesk-rich-mermaid-loading {
+  align-items: center;
+  color: var(--color-muted);
+  display: flex;
+  font-family: var(--font-mono-family), Menlo, monospace;
+  font-size: 0.75rem;
+  justify-content: center;
+  min-height: 8rem;
+  text-transform: uppercase;
+}
+
+.claudesk-rich-markdown-editor .ProseMirror .milkdown-code-block .claudesk-rich-mermaid-svg {
+  overflow-x: auto;
+}
+
+.claudesk-rich-markdown-editor .ProseMirror .milkdown-code-block .claudesk-rich-mermaid-svg svg {
+  display: block;
+  height: auto;
+  margin: 0 auto;
+  max-width: 100%;
+}
+
+.claudesk-rich-markdown-editor .ProseMirror .milkdown-code-block .claudesk-rich-mermaid-error {
+  color: var(--color-primary);
+  display: grid;
+  font-family: var(--font-ui-family), system-ui, sans-serif;
+  gap: 0.5rem;
+  overflow-wrap: anywhere;
+}
+
+.claudesk-rich-markdown-editor .ProseMirror .milkdown-code-block .claudesk-rich-mermaid-error-label {
+  align-items: center;
+  color: var(--color-accent);
+  display: inline-flex;
+  font-family: var(--font-mono-family), Menlo, monospace;
+  font-size: 0.75rem;
+  gap: 0.35rem;
+  line-height: 1.2;
+  text-transform: uppercase;
+}
+
+.claudesk-rich-markdown-editor .ProseMirror .milkdown-code-block .claudesk-rich-mermaid-error-label span {
+  align-items: center;
+  border: 1px solid color-mix(in oklab, var(--color-accent) 45%, var(--color-border));
+  border-radius: 999px;
+  display: inline-flex;
+  height: 1rem;
+  justify-content: center;
+  width: 1rem;
+}
+
+.claudesk-rich-markdown-editor .ProseMirror .milkdown-code-block .claudesk-rich-mermaid-error p {
+  color: var(--color-secondary);
+  font-size: 0.8125rem;
+  line-height: 1.4;
+  margin: 0;
+}
+
+.claudesk-rich-markdown-editor .ProseMirror .milkdown-code-block .claudesk-rich-mermaid-error pre {
+  background: color-mix(in oklab, var(--color-accent) 8%, var(--color-surface));
+  border: 1px solid color-mix(in oklab, var(--color-accent) 35%, var(--color-border));
+  color: var(--color-primary);
+  margin: 0;
+  max-height: 14rem;
+  overflow: auto;
+  padding: 0.625rem;
+}
+
+.claudesk-rich-markdown-editor .ProseMirror .milkdown-code-block .cm-editor {
+  background: transparent;
+}
+
+.claudesk-rich-markdown-editor .ProseMirror .milkdown-code-block .cm-focused {
+  outline: none;
+}
+
+.claudesk-rich-markdown-editor .ProseMirror .milkdown-code-block .milkdown-code-block-placeholder {
+  background: transparent;
+  border: 0;
+  color: var(--color-primary);
+  margin: 0;
+  padding: 0.75rem 1rem;
+  white-space: pre;
+}
+
+.claudesk-rich-markdown-editor .ProseMirror .milkdown-code-block .language-picker {
+  color: var(--color-primary);
+  font-family: var(--font-mono-family), Menlo, monospace;
+  font-size: 0.75rem;
+  position: fixed;
+  z-index: 50;
+}
+
+.claudesk-rich-markdown-editor .ProseMirror .milkdown-code-block .language-picker .list-wrapper {
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  box-shadow: 0 8px 22px color-mix(in oklab, var(--color-bg) 78%, transparent);
+  min-width: 13rem;
+  padding: 0.35rem;
+}
+
+.claudesk-rich-markdown-editor .ProseMirror .milkdown-code-block .search-box {
+  align-items: center;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  display: grid;
+  gap: 0.25rem;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  height: 1.8rem;
+  margin-bottom: 0.35rem;
+  padding: 0 0.4rem;
+}
+
+.claudesk-rich-markdown-editor .ProseMirror .milkdown-code-block .search-input {
+  background: transparent;
+  border: 0;
+  color: var(--color-primary);
+  font-family: var(--font-mono-family), Menlo, monospace;
+  font-size: 0.75rem;
+  height: 100%;
+  min-width: 0;
+  outline: none;
+}
+
+.claudesk-rich-markdown-editor .ProseMirror .milkdown-code-block .search-input::placeholder {
+  color: var(--color-muted);
+}
+
+.claudesk-rich-markdown-editor .ProseMirror .milkdown-code-block .clear-icon.hidden {
+  visibility: hidden;
+}
+
+.claudesk-rich-markdown-editor .ProseMirror .milkdown-code-block .language-list {
+  list-style: none;
+  margin: 0;
+  max-height: 13rem;
+  overflow-y: auto;
+  padding: 0;
+}
+
+.claudesk-rich-markdown-editor .ProseMirror .milkdown-code-block .language-list-item {
+  color: var(--color-secondary);
+  cursor: pointer;
+  padding: 0.35rem 0.45rem;
+  text-transform: uppercase;
+}
+
+.claudesk-rich-markdown-editor .ProseMirror .milkdown-code-block .language-list-item:hover,
+.claudesk-rich-markdown-editor .ProseMirror .milkdown-code-block .language-list-item:focus,
+.claudesk-rich-markdown-editor .ProseMirror .milkdown-code-block .language-list-item[aria-selected="true"] {
+  background: var(--color-hover);
+  color: var(--color-display);
+  outline: none;
+}
+
+.claudesk-rich-markdown-editor .milkdown-link-preview,
+.claudesk-rich-markdown-editor .milkdown-link-edit {
+  position: absolute;
+  z-index: 30;
+}
+
+.claudesk-rich-markdown-editor .milkdown-link-preview[data-show="false"],
+.claudesk-rich-markdown-editor .milkdown-link-edit[data-show="false"] {
+  display: none;
+}
+
+.claudesk-rich-markdown-editor .milkdown-link-preview > .link-preview,
+.claudesk-rich-markdown-editor .milkdown-link-edit > .link-edit {
+  align-items: center;
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  box-shadow: 0 4px 16px color-mix(in oklab, var(--color-primary) 12%, transparent);
+  color: var(--color-primary);
+  display: flex;
+  font-family: var(--font-ui-family), system-ui, sans-serif;
+  font-size: 0.8125rem;
+  gap: 0.375rem;
+  line-height: 1.2;
+  padding: 0.35rem 0.5rem;
+}
+
+.claudesk-rich-markdown-editor .milkdown-link-preview .link-display {
+  color: var(--color-secondary);
+  max-width: min(22rem, 55vw);
+  overflow: hidden;
+  text-decoration: none;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.claudesk-rich-markdown-editor .milkdown-link-preview .link-display:hover {
+  color: var(--color-display);
+  text-decoration: underline;
+}
+
+.claudesk-rich-markdown-editor .milkdown-link-preview .milkdown-icon,
+.claudesk-rich-markdown-editor .milkdown-link-edit .milkdown-icon {
+  border: 1px solid transparent;
+  color: var(--color-secondary);
+  cursor: pointer;
+  font-family: var(--font-mono-family), Menlo, monospace;
+  font-size: 0.6875rem;
+  line-height: 1;
+  padding: 0.25rem 0.35rem;
+  text-transform: uppercase;
+}
+
+.claudesk-rich-markdown-editor .milkdown-link-preview .milkdown-icon:hover,
+.claudesk-rich-markdown-editor .milkdown-link-edit .milkdown-icon:hover {
+  background: var(--color-hover);
+  border-color: var(--color-border);
+  color: var(--color-display);
+}
+
+.claudesk-rich-markdown-editor .milkdown-link-edit .input-area {
+  background: transparent;
+  border: 0;
+  color: var(--color-primary);
+  font: inherit;
+  min-width: min(18rem, 45vw);
+  outline: none;
+}
+
+.claudesk-rich-markdown-editor .claudesk-rich-inline-toolbar {
+  align-items: center;
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+  display: flex;
+  gap: 0;
+  padding: 0;
+  position: absolute;
+  z-index: 35;
+}
+
+.claudesk-rich-markdown-editor .claudesk-rich-inline-toolbar[data-show="false"] {
+  display: none;
+}
+
+.claudesk-rich-markdown-editor .claudesk-rich-inline-button-group {
+  background: var(--color-bg);
+  box-shadow: 0 4px 16px color-mix(in oklab, var(--color-primary) 12%, transparent);
+}
+
+.claudesk-rich-markdown-editor .claudesk-rich-inline-button-group [data-slot="button"] {
+  height: 1.625rem;
+  padding: 0;
+  width: 1.625rem;
+}
+
+.claudesk-rich-inline-color-swatch {
+  background: color-mix(in oklab, var(--claudesk-highlight-tone) 42%, var(--color-surface));
+  border: 1px solid color-mix(in oklab, var(--claudesk-highlight-tone) 52%, var(--color-border));
+  display: inline-block;
+  height: 0.75rem;
+  width: 0.75rem;
+}
+
+.claudesk-rich-inline-color-swatch[data-highlight-color="yellow"] {
+  --claudesk-highlight-tone: var(--color-warn);
+}
+
+.claudesk-rich-inline-color-swatch[data-highlight-color="green"] {
+  --claudesk-highlight-tone: var(--color-success);
+}
+
+.claudesk-rich-inline-color-swatch[data-highlight-color="blue"] {
+  --claudesk-highlight-tone: var(--color-active);
+}
+
+.claudesk-rich-inline-color-swatch[data-highlight-color="pink"] {
+  --claudesk-highlight-tone: var(--color-accent);
+}
+
+.claudesk-rich-markdown-editor .claudesk-rich-slash-menu {
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  box-shadow: 0 8px 24px color-mix(in oklab, var(--color-primary) 14%, transparent);
+  color: var(--color-primary);
+  display: flex;
+  flex-direction: column;
+  font-family: var(--font-ui-family), system-ui, sans-serif;
+  gap: 0.125rem;
+  max-height: min(18rem, 55vh);
+  max-width: min(24rem, 82vw);
+  min-width: 18rem;
+  overflow-y: auto;
+  padding: 0.25rem;
+  position: absolute;
+  z-index: 60;
+}
+
+.claudesk-rich-markdown-editor .claudesk-rich-slash-menu[data-show="false"] {
+  display: none;
+}
+
+.claudesk-rich-wikilink-menu {
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  box-shadow: 0 8px 24px color-mix(in oklab, var(--color-primary) 14%, transparent);
+  color: var(--color-primary);
+  display: flex;
+  flex-direction: column;
+  font-family: var(--font-ui-family), system-ui, sans-serif;
+  gap: 0.125rem;
+  max-height: min(18rem, 55vh);
+  max-width: min(24rem, 82vw);
+  min-width: 18rem;
+  overflow-y: auto;
+  padding: 0.25rem;
+  position: absolute;
+  z-index: 60;
+}
+
+.claudesk-rich-wikilink-menu[data-show="false"] {
+  display: none;
+}
+
+.claudesk-rich-markdown-editor .claudesk-rich-block-handle {
+  align-items: center;
+  background: var(--color-bg);
+  border-radius: var(--control-radius);
+  color: var(--color-secondary);
+  cursor: grab;
+  display: flex;
+  height: 1.75rem;
+  justify-content: center;
+  position: absolute;
+  transition:
+    background-color 120ms ease,
+    color 120ms ease,
+    opacity 120ms ease;
+  width: 1.75rem;
+  z-index: 45;
+}
+
+.claudesk-rich-markdown-editor .claudesk-rich-block-handle[data-show="false"] {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.claudesk-rich-markdown-editor .claudesk-rich-block-handle-icon {
+  display: block;
+  flex: 0 0 auto;
+}
+
+.claudesk-rich-markdown-editor .claudesk-rich-block-handle:hover,
+.claudesk-rich-markdown-editor .claudesk-rich-block-handle:focus {
+  background: var(--color-hover);
+  color: var(--color-display);
+  outline: none;
+}
+
+.claudesk-rich-markdown-editor .claudesk-rich-block-handle:active {
+  cursor: grabbing;
+}
+
+.claudesk-rich-markdown-editor .ProseMirror[data-dragging="true"] {
+  cursor: grabbing;
+}
+
+.claudesk-rich-block-drag-preview {
+  background: var(--color-bg);
+  border: 1px solid color-mix(in oklab, var(--color-border) 78%, transparent);
+  border-radius: var(--control-radius);
+  box-shadow: 0 12px 32px color-mix(in oklab, var(--color-display) 18%, transparent);
+  box-sizing: border-box;
+  color: var(--color-display);
+  max-height: min(18rem, 45vh);
+  max-width: min(32rem, 72vw);
+  opacity: 0;
+  overflow: hidden;
+  padding: 0.5rem 0.75rem;
+  pointer-events: none;
+  position: fixed;
+  transform: scale(0.96);
+  transform-origin: top left;
+  transition: opacity 70ms ease;
+  z-index: 1000;
+}
+
+.claudesk-rich-block-drag-preview[data-show="true"] {
+  opacity: 0.76;
+}
+
+.claudesk-rich-block-drag-preview > :first-child {
+  margin-top: 0;
+}
+
+.claudesk-rich-block-drag-preview > :last-child {
+  margin-bottom: 0;
+}
+
+.claudesk-rich-block-native-drag-image {
+  height: 1px;
+  left: 0;
+  opacity: 0;
+  pointer-events: none;
+  position: fixed;
+  top: 0;
+  width: 1px;
+}
+
+.claudesk-rich-block-drop-indicator {
+  background: color-mix(in oklab, var(--color-accent) 78%, var(--color-bg));
+  border-radius: 999px;
+  box-shadow: 0 0 0 1px color-mix(in oklab, var(--color-bg) 80%, transparent);
+  height: 4px;
+  opacity: 0;
+  pointer-events: none;
+  position: fixed;
+  transform: translateY(-50%);
+  transition:
+    opacity 80ms ease,
+    top 80ms ease,
+    width 80ms ease;
+  z-index: 70;
+}
+
+.claudesk-rich-block-drop-indicator[data-show="true"] {
+  opacity: 0.86;
+}
+
+.claudesk-rich-markdown-editor .ProseMirror blockquote {
+  background: color-mix(in oklab, var(--color-secondary) 7%, var(--color-surface));
+  border-left: 4px solid color-mix(in oklab, var(--color-secondary) 48%, var(--color-border));
+  color: var(--color-primary);
+  padding: 0.75rem 1rem 0.75rem 1.125rem;
+}
+
+.claudesk-rich-markdown-editor .ProseMirror blockquote > :first-child {
+  margin-top: 0;
+}
+
+.claudesk-rich-markdown-editor .ProseMirror blockquote > :last-child {
+  margin-bottom: 0;
+}
+
+.claudesk-rich-markdown-editor .ProseMirror dl[data-type="footnote_definition"] {
+  align-items: baseline;
+  border-top: 0;
+  color: var(--color-primary);
+  column-gap: 0.25rem;
+  display: grid;
+  grid-template-columns: max-content minmax(0, 1fr);
+  margin: 0.45rem 0;
+  padding-top: 0;
+}
+
+.claudesk-rich-markdown-editor .ProseMirror dl[data-type="footnote_definition"] dt {
+  color: var(--color-secondary);
+  font-family: var(--font-mono-family), Menlo, monospace;
+  font-size: 0.75rem;
+  font-weight: 600;
+  line-height: 1.5;
+}
+
+.claudesk-rich-markdown-editor .ProseMirror dl[data-type="footnote_definition"] dt::before {
+  content: "[^";
+}
+
+.claudesk-rich-markdown-editor .ProseMirror dl[data-type="footnote_definition"] dt::after {
+  content: "]:";
+}
+
+.claudesk-rich-markdown-editor .ProseMirror dl[data-type="footnote_definition"] dd {
+  line-height: 1.5;
+  margin: 0;
+  min-width: 0;
+}
+
+.claudesk-rich-markdown-editor .ProseMirror dl[data-type="footnote_definition"] dd > :first-child {
+  margin-top: 0;
+}
+
+.claudesk-rich-markdown-editor .ProseMirror dl[data-type="footnote_definition"] dd > :last-child {
+  margin-bottom: 0;
+}
+
+.claudesk-rich-markdown-editor .ProseMirror .claudesk-rich-callout {
+  color: var(--color-primary);
+  display: block;
+  padding: 0.65rem 0.75rem 0.75rem;
+}
+
+.claudesk-rich-markdown-editor .ProseMirror .claudesk-rich-callout-header {
+  align-items: center;
+  border-bottom: 1px solid color-mix(in oklab, var(--md-callout-tone) 18%, var(--color-border));
+  display: flex;
+  gap: 0.45rem;
+  margin: -0.15rem 0 0.65rem;
+  padding-bottom: 0.45rem;
+}
+
+.claudesk-rich-markdown-editor .ProseMirror .claudesk-rich-callout-icon-host {
+  color: var(--md-callout-tone);
+  display: inline-flex;
+  flex: 0 0 auto;
+}
+
+.claudesk-rich-markdown-editor .ProseMirror .claudesk-rich-callout-icon {
+  height: 1rem;
+  width: 1rem;
+}
+
+.claudesk-rich-markdown-editor .ProseMirror .claudesk-rich-callout-type,
+.claudesk-rich-markdown-editor .ProseMirror .claudesk-rich-callout-title-input {
+  background: transparent;
+  border: 0;
+  border-radius: var(--control-radius);
+  color: var(--md-callout-tone);
+  font-family: var(--font-mono-family), Menlo, monospace;
+  font-size: 0.75rem;
+  font-weight: 600;
+  line-height: 1.25;
+  min-height: 1.65rem;
+  outline: none;
+  padding: 0.2rem 0.35rem;
+}
+
+.claudesk-rich-markdown-editor .ProseMirror .claudesk-rich-callout-type {
+  cursor: pointer;
+  text-transform: uppercase;
+  width: 7.5rem;
+}
+
+.claudesk-rich-markdown-editor .ProseMirror .claudesk-rich-callout-title-input {
+  color: var(--color-primary);
+  flex: 1 1 auto;
+  min-width: 6rem;
+}
+
+.claudesk-rich-markdown-editor .ProseMirror .claudesk-rich-callout-action {
+  display: flex;
+  margin-left: auto;
+}
+
+.claudesk-rich-markdown-editor .ProseMirror .claudesk-rich-callout-title-input::placeholder {
+  color: var(--color-muted);
+}
+
+.claudesk-rich-markdown-editor .ProseMirror .claudesk-rich-callout-type:focus,
+.claudesk-rich-markdown-editor .ProseMirror .claudesk-rich-callout-title-input:focus {
+  background: var(--color-hover);
+}
+
+.claudesk-rich-callout-type-menu {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  box-shadow: 0 8px 24px color-mix(in oklab, var(--color-primary) 14%, transparent);
+  color: var(--color-primary);
+  display: grid;
+  gap: 0.1rem;
+  max-height: min(20rem, calc(100vh - 2rem));
+  overflow-y: auto;
+  padding: 0.25rem;
+  position: fixed;
+  width: 13rem;
+  z-index: 120;
+}
+
+.claudesk-rich-callout-type-option {
+  align-items: center;
+  background: transparent;
+  border: 0;
+  border-radius: var(--control-radius);
+  color: var(--color-primary);
+  cursor: pointer;
+  display: flex;
+  font-family: var(--font-mono-family), Menlo, monospace;
+  font-size: 0.75rem;
+  gap: 0.45rem;
+  letter-spacing: 0;
+  line-height: 1.25;
+  min-height: 1.8rem;
+  padding: 0.25rem 0.45rem;
+  text-align: left;
+  text-transform: uppercase;
+  width: 100%;
+}
+
+.claudesk-rich-callout-type-option[aria-selected="true"],
+.claudesk-rich-callout-type-option:hover {
+  background: var(--color-hover);
+}
+
+.claudesk-rich-callout-type-option-icon {
+  color: var(--md-callout-tone, var(--color-secondary));
+  display: inline-flex;
+  height: 0.95rem;
+  width: 0.95rem;
+}
+
+.claudesk-rich-callout-type-option-icon svg {
+  height: 0.95rem;
+  width: 0.95rem;
+}
+
+.md .claudesk-rich-callout-body {
+  display: flow-root;
+}
+
+.md .claudesk-rich-callout-body > p {
+  margin-bottom: 0.35rem !important;
+  margin-top: 0.35rem !important;
+}
+
+.md .claudesk-rich-callout-body > p:empty,
+.md .claudesk-rich-callout-body > p:has(> br.ProseMirror-trailingBreak:only-child) {
+  margin-bottom: 0 !important;
+  margin-top: 0 !important;
+  min-height: 1.4em;
+}
+
+.claudesk-rich-markdown-editor .ProseMirror .claudesk-rich-callout-body > :first-child {
+  margin-top: 0 !important;
+}
+
+.claudesk-rich-markdown-editor .ProseMirror .claudesk-rich-callout-body > :last-child {
+  margin-bottom: 0 !important;
+}
+
+.claudesk-rich-markdown-editor .ProseMirror .claudesk-rich-math-inline {
+  color: var(--color-display);
+}
+
+.claudesk-rich-markdown-editor .ProseMirror .claudesk-rich-math-inline .katex {
+  font-size: 1em;
+}
+
+.claudesk-rich-markdown-editor .ProseMirror .claudesk-rich-math-inline {
+  cursor: text;
+  content-visibility: auto;
+  contain-intrinsic-size: 2em 1.4em;
+  display: inline-block;
+  overflow: visible;
+  padding: 0 0.2em;
+  user-select: text;
+  vertical-align: -0.48em;
+  white-space: nowrap;
+}
+
+.claudesk-rich-markdown-editor .ProseMirror .claudesk-rich-math-block {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  color: var(--color-display);
+  margin: 1rem 0;
+  padding: 0.625rem 0.75rem 0.75rem;
+  user-select: text;
+}
+
+.claudesk-rich-markdown-editor .ProseMirror .claudesk-rich-math-block.selected {
+  outline: 1px solid var(--color-secondary);
+  outline-offset: 2px;
+}
+
+.claudesk-rich-markdown-editor .ProseMirror .claudesk-rich-math-toolbar {
+  align-items: center;
+  color: var(--color-secondary);
+  display: flex;
+  font-family: var(--font-ui-family), system-ui, sans-serif;
+  font-size: 0.75rem;
+  justify-content: flex-end;
+  line-height: 1.4;
+  margin-bottom: 0.5rem;
+  min-height: 1.35rem;
+}
+
+.claudesk-rich-markdown-editor .ProseMirror .claudesk-rich-math-block[data-editing="false"] .claudesk-rich-math-toolbar {
+  cursor: text;
+}
+
+.claudesk-rich-markdown-editor .ProseMirror .claudesk-rich-math-action {
+  align-items: center;
+  display: flex;
+  gap: 0.25rem;
+  margin-left: auto;
+}
+
+.claudesk-rich-markdown-editor .ProseMirror .claudesk-rich-math-toolbar-button {
+  font-family: var(--font-mono-family), Menlo, monospace;
+  font-size: 0.6875rem;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.claudesk-rich-markdown-editor .ProseMirror .claudesk-rich-math-source {
+  background: color-mix(in oklab, var(--color-bg) 76%, var(--color-surface));
+  border: 1px solid var(--color-border);
+  box-sizing: border-box;
+  color: var(--color-primary);
+  display: block;
+  font-family: var(--font-mono-family), Menlo, monospace;
+  font-size: 0.9375rem;
+  line-height: 1.55;
+  margin: 0 0 0.75rem;
+  min-height: 2.65rem;
+  outline: none;
+  overflow: hidden;
+  padding: 0.55rem 0.65rem;
+  resize: none;
+  width: 100%;
+}
+
+.claudesk-rich-markdown-editor .ProseMirror .claudesk-rich-math-source:focus {
+  border-color: var(--color-secondary);
+}
+
+.claudesk-rich-markdown-editor .ProseMirror .claudesk-rich-math-preview {
+  color: var(--color-display);
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 0.15rem 0;
+}
+
+.claudesk-rich-markdown-editor .ProseMirror .claudesk-rich-math-preview.empty {
+  color: var(--color-muted);
+  font-family: var(--font-mono-family), Menlo, monospace;
+  font-size: 0.875rem;
+}
+
+.claudesk-rich-markdown-editor .ProseMirror .claudesk-rich-math-preview .katex-display {
+  margin: 0.25rem 0;
+}
+
+.claudesk-rich-markdown-editor .ProseMirror li {
+  position: relative;
+}
+
+.claudesk-rich-markdown-editor .ProseMirror li[data-item-type="task"] {
+  list-style: none;
+}
+
+.claudesk-rich-markdown-editor .ProseMirror li[data-item-type="task"][data-checked="true"] {
+  color: var(--md-task-checked-color);
+}
+
+.claudesk-rich-markdown-editor .ProseMirror li[data-item-type="task"][data-checked="true"] > :where(*):not(ul, ol),
+.claudesk-rich-markdown-editor .ProseMirror li[data-item-type="task"][data-checked="true"] > :where(*):not(ul, ol) :where(*) {
+  color: var(--md-task-checked-color);
+}
+
+.claudesk-rich-markdown-editor .ProseMirror li[data-item-type="task"][data-checked="true"] li:not([data-checked="true"]) {
+  color: var(--color-primary);
+}
+
+.claudesk-rich-markdown-editor .ProseMirror li[data-item-type="task"] > * {
+  min-width: 0;
+}
+
+.claudesk-rich-markdown-editor .ProseMirror li[data-item-type="task"] > p:first-child {
+  margin-top: 0;
+}
+
+.claudesk-rich-markdown-editor .ProseMirror li[data-item-type="task"] > p:last-child {
+  margin-bottom: 0;
+}
+
+.claudesk-rich-markdown-editor .ProseMirror li[data-item-type="task"]::before {
+  background: var(--md-task-checkbox-bg);
+  border: 1px solid var(--md-task-checkbox-border);
+  border-radius: 2px;
+  box-sizing: border-box;
+  content: "";
+  cursor: pointer;
+  height: var(--md-task-checkbox-size);
+  left: -1.25em;
+  position: absolute;
+  top: 0.42em;
+  width: var(--md-task-checkbox-size);
+}
+
+.claudesk-rich-markdown-editor .ProseMirror li[data-item-type="task"][data-checked="true"]::before {
+  background: var(--md-task-checkbox-checked-bg);
+  border-color: var(--md-task-checkbox-checked-border);
+}
+
+.claudesk-rich-markdown-editor .ProseMirror li[data-item-type="task"][data-checked="true"]::after {
+  border: solid var(--md-task-checkbox-check);
+  border-width: 0 1.7px 1.7px 0;
+  content: "";
+  height: calc(var(--md-task-checkbox-size) * 0.52);
+  left: calc(-1.25em + var(--md-task-checkbox-size) * 0.36);
+  pointer-events: none;
+  position: absolute;
+  top: calc(0.42em + var(--md-task-checkbox-size) * 0.15);
+  transform: rotate(45deg);
+  width: calc(var(--md-task-checkbox-size) * 0.27);
+}
+
+.claudesk-rich-markdown-editor .ProseMirror .tableWrapper {
+  overflow-x: auto;
+}
+
+.claudesk-rich-markdown-editor .ProseMirror .milkdown-table-block {
+  display: block;
+  margin: 1rem 0;
+  max-width: 100%;
+}
+
+.claudesk-rich-markdown-editor .ProseMirror .milkdown-table-block .table-wrapper {
+  overflow-x: auto;
+  padding: 0.125rem 0;
+}
+
+.claudesk-rich-markdown-editor .ProseMirror table {
+  border-collapse: collapse;
+  margin: 0;
+  table-layout: fixed;
+  width: 100%;
+}
+
+.claudesk-rich-markdown-editor .ProseMirror th,
+.claudesk-rich-markdown-editor .ProseMirror td {
+  border: 1px solid var(--color-border);
+  box-sizing: border-box;
+  min-width: var(--default-cell-min-width);
+  padding: 0.4rem 0.55rem;
+  position: relative;
+  vertical-align: top;
+  white-space: normal;
+}
+
+.claudesk-rich-markdown-editor .ProseMirror th {
+  color: var(--color-display);
+  font-weight: 600;
+}
+
+.claudesk-rich-markdown-editor .ProseMirror .selectedCell::after {
+  background: color-mix(in oklab, var(--color-secondary) 18%, transparent);
+  bottom: 0;
+  content: "";
+  left: 0;
+  pointer-events: none;
+  position: absolute;
+  right: 0;
+  top: 0;
+  z-index: 2;
+}
+
+.claudesk-rich-markdown-editor .ProseMirror .column-resize-handle {
+  background: var(--color-secondary);
+  bottom: 0;
+  pointer-events: none;
+  position: absolute;
+  right: -2px;
+  top: 0;
+  width: 4px;
+  z-index: 20;
+}
+
+.claudesk-rich-markdown-editor .ProseMirror .milkdown-table-block .handle {
+  align-items: center;
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  box-shadow: 0 4px 14px color-mix(in oklab, var(--color-primary) 10%, transparent);
+  color: var(--color-secondary);
+  display: flex;
+  font-family: var(--font-ui-family), system-ui, sans-serif;
+  justify-content: center;
+  position: absolute;
+  transition: background-color 120ms ease, border-color 120ms ease, color 120ms ease, opacity 120ms ease;
+  z-index: 50;
+}
+
+.claudesk-rich-markdown-editor .ProseMirror .milkdown-table-block .handle[data-show="false"] {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.claudesk-rich-markdown-editor .ProseMirror .milkdown-table-block .handle[data-show="true"] {
+  opacity: 1;
+}
+
+.claudesk-rich-markdown-editor .ProseMirror .milkdown-table-block .handle:hover,
+.claudesk-rich-markdown-editor .ProseMirror .milkdown-table-block .handle:focus-within {
+  background: var(--color-hover);
+  border-color: var(--color-secondary);
+  color: var(--color-display);
+}
+
+.claudesk-rich-markdown-editor .ProseMirror .milkdown-table-block .cell-handle {
+  cursor: grab;
+  height: 1.4rem;
+  width: 1.4rem;
+}
+
+.claudesk-rich-markdown-editor .ProseMirror .milkdown-table-block .cell-handle:active {
+  cursor: grabbing;
+}
+
+.claudesk-rich-markdown-editor .ProseMirror .milkdown-table-block [data-role="col-drag-handle"] {
+  transform: translateY(-0.35rem);
+}
+
+.claudesk-rich-markdown-editor .ProseMirror .milkdown-table-block [data-role="row-drag-handle"] {
+  transform: translateX(0.35rem);
+}
+
+.claudesk-rich-markdown-editor .ProseMirror .milkdown-table-block .line-handle {
+  background: var(--color-secondary);
+  border: 0;
+  box-shadow: none;
+  color: var(--color-display);
+  cursor: pointer;
+  min-height: 1px;
+  min-width: 1px;
+}
+
+.claudesk-rich-markdown-editor .ProseMirror .milkdown-table-block .line-handle[data-display-type="indicator"] {
+  background: var(--color-active);
+}
+
+.claudesk-rich-markdown-editor .ProseMirror .milkdown-table-block .line-handle[data-display-type="none"] {
+  display: none;
+}
+
+.claudesk-rich-markdown-editor .ProseMirror .milkdown-table-block .add-button,
+.claudesk-rich-markdown-editor .ProseMirror .milkdown-table-block .button-group button {
+  align-items: center;
+  background: transparent;
+  border: 0;
+  color: inherit;
+  cursor: pointer;
+  display: flex;
+  height: 1.5rem;
+  justify-content: center;
+  padding: 0;
+  width: 1.5rem;
+}
+
+.claudesk-rich-markdown-editor .ProseMirror .milkdown-table-block .add-button {
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  box-shadow: 0 4px 14px color-mix(in oklab, var(--color-primary) 10%, transparent);
+  color: var(--color-secondary);
+  position: absolute;
+}
+
+.claudesk-rich-markdown-editor .ProseMirror .milkdown-table-block [data-role="x-line-drag-handle"] .add-button {
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.claudesk-rich-markdown-editor .ProseMirror .milkdown-table-block [data-role="y-line-drag-handle"] .add-button {
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.claudesk-rich-markdown-editor .ProseMirror .milkdown-table-block .add-button:hover,
+.claudesk-rich-markdown-editor .ProseMirror .milkdown-table-block .button-group button:hover {
+  background: var(--color-hover);
+  color: var(--color-display);
+}
+
+.claudesk-rich-markdown-editor .ProseMirror .milkdown-table-block .button-group {
+  align-items: center;
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  box-shadow: 0 4px 14px color-mix(in oklab, var(--color-primary) 10%, transparent);
+  display: flex;
+  gap: 0.125rem;
+  left: 50%;
+  padding: 0.15rem;
+  pointer-events: auto;
+  position: absolute;
+  top: calc(100% - 1px);
+  transform: translateX(-50%);
+  z-index: 60;
+}
+
+.claudesk-rich-markdown-editor .ProseMirror .milkdown-table-block .button-group::before {
+  bottom: 100%;
+  content: "";
+  height: 0.35rem;
+  left: 0;
+  position: absolute;
+  right: 0;
+}
+
+.claudesk-rich-markdown-editor .ProseMirror .milkdown-table-block .button-group[data-show="false"] {
+  display: none;
+  pointer-events: none;
+}
+
+.claudesk-rich-markdown-editor .ProseMirror .milkdown-table-block .button-group[data-show="true"] {
+  display: flex;
+  pointer-events: auto;
+}
+
+.claudesk-rich-markdown-editor .ProseMirror .milkdown-table-block .handle[data-show="true"] .button-group,
+.claudesk-rich-markdown-editor .ProseMirror .milkdown-table-block .cell-handle:hover .button-group,
+.claudesk-rich-markdown-editor .ProseMirror .milkdown-table-block .cell-handle:focus-within .button-group,
+.claudesk-rich-markdown-editor .ProseMirror .milkdown-table-block .button-group:hover {
+  display: flex;
+  pointer-events: auto;
+}
+
+.claudesk-rich-markdown-editor .ProseMirror .milkdown-table-block .milkdown-icon {
+  align-items: center;
+  display: flex;
+  height: 1rem;
+  justify-content: center;
+  pointer-events: none;
+  width: 1rem;
+}
+
+.claudesk-rich-markdown-editor .ProseMirror .milkdown-table-block .milkdown-icon svg {
+  display: block;
+  height: 1rem;
+  width: 1rem;
+}
+
+.claudesk-rich-markdown-editor .ProseMirror .milkdown-table-block .drag-preview {
+  background: color-mix(in oklab, var(--color-active-surface) 82%, transparent);
+  border: 1px solid var(--color-secondary);
+  opacity: 0.75;
+  overflow: hidden;
+  pointer-events: none;
+  position: absolute;
+  z-index: 25;
+}
+
+.claudesk-rich-markdown-editor .ProseMirror .milkdown-table-block .drag-preview[data-show="false"] {
+  display: none;
+}
+
+.claudesk-rich-markdown-editor .ProseMirror .milkdown-table-block .drag-preview[data-show="true"] {
+  display: block;
+}
+
+/* Note workspace: center the body and rail as one reading group. */
+.claudesk-note-workspace {
+  --claudesk-note-body-width: 70ch;
+  --claudesk-note-heading-fold-gutter: 2.75rem;
+  --claudesk-note-rail-gap: 2rem;
+  --claudesk-note-rail-width: 16rem;
+  --claudesk-note-wide-group-width: calc(
+    var(--claudesk-note-heading-fold-gutter) +
+    var(--claudesk-note-body-width) +
+    var(--claudesk-note-rail-gap) +
+    var(--claudesk-note-rail-width)
+  );
+  container: claudesk-note-workspace / inline-size;
+}
+
+.claudesk-note-shell {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  min-height: 0;
+  width: 100%;
+}
+
+.claudesk-note-layout {
+  display: grid;
+  flex: 1 1 auto;
+  grid-template-columns:
+    minmax(0, 1fr)
+    var(--claudesk-note-heading-fold-gutter)
+    minmax(0, var(--claudesk-note-body-width))
+    var(--claudesk-note-rail-gap)
+    var(--claudesk-note-rail-width)
+    minmax(0, 1fr);
+  grid-template-rows: minmax(0, 1fr);
+  min-height: 0;
+  overflow: hidden;
+  width: 100%;
+}
+
+.claudesk-note-column {
+  margin-left: max(0px, calc((100% - var(--claudesk-note-wide-group-width)) / 2 + var(--claudesk-note-heading-fold-gutter)));
+  margin-right: auto;
+  max-width: var(--claudesk-note-body-width);
+  width: min(100%, var(--claudesk-note-body-width));
+}
+
+.claudesk-note-rail-wrap {
+  align-self: stretch;
+  grid-column: 5;
+  grid-row: 1;
+  justify-self: start;
+  margin-left: 0;
+  margin-right: 0;
+  min-height: 0;
+  overscroll-behavior: contain;
+  overflow-x: hidden;
+  overflow-y: auto;
+  padding-bottom: 1.5rem;
+  width: var(--claudesk-note-rail-width);
+}
+
+.claudesk-note-content {
+  --claudesk-note-end-scroll-space: clamp(16rem, 45dvh, 36rem);
+  grid-column: 2 / 4;
+  grid-row: 1;
+  margin-left: 0;
+  margin-right: 0;
+  max-width: calc(var(--claudesk-note-body-width) + var(--claudesk-note-heading-fold-gutter));
+  min-height: 0;
+  overscroll-behavior: contain;
+  overflow-x: hidden;
+  overflow-y: auto;
+  padding-bottom: 1.5rem;
+  padding-left: var(--claudesk-note-heading-fold-gutter);
+  width: 100%;
+}
+
+.claudesk-note-end-scroll-padding {
+  padding-bottom: var(--claudesk-note-end-scroll-space, 45dvh);
+}
+
+@container claudesk-note-workspace (max-width: 76rem) {
+  .claudesk-note-column {
+    margin-left: auto;
+    margin-right: auto;
+    max-width: var(--claudesk-note-body-width);
+    width: 100%;
+  }
+
+  .claudesk-note-layout {
+    display: block;
+    overflow-x: hidden;
+    overflow-y: auto;
+  }
+
+  .claudesk-note-rail-wrap {
+    margin-inline: auto;
+    margin-bottom: 1.25rem;
+    max-height: none;
+    max-width: var(--claudesk-note-body-width);
+    overflow: visible;
+    padding-bottom: 0;
+    position: static;
+    width: 100%;
+  }
+
+  .claudesk-note-content {
+    margin-left: auto;
+    margin-right: auto;
+    max-width: var(--claudesk-note-body-width);
+    overflow: visible;
+    padding-bottom: 1.5rem;
+    padding-left: 0;
+    width: 100%;
+  }
+
+  .claudesk-note-outline-rail {
+    border-bottom: 1px solid var(--color-border);
+    padding-bottom: 1rem;
+    padding-left: 0;
+  }
+}
+
+/* Paper list responsive metadata. */
+.paper-list-card {
+  container: paper-card / inline-size;
+}
+
+@container paper-card (max-width: 459px) {
+  .paper-list-card:not([data-compact="true"]) .paper-card-relevance-block {
+    display: none;
+  }
+}
+
+/* Log summary adapts to the resizable index pane, not the viewport. */
+.claudesk-log-pane {
+  container: claudesk-log-pane / inline-size;
+}
+
+@container claudesk-log-pane (max-width: 760px) {
+  .claudesk-log-summary {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .claudesk-log-summary-cell:nth-child(2n) {
+    border-right-width: 0;
+  }
+
+  .claudesk-log-summary-cell:nth-child(n + 3) {
+    border-top: 1px solid var(--color-border);
+  }
+}
+
+/* Tasks pane controls wrap inside the pane instead of causing horizontal scroll. */
+.tasks-control-strip {
+  container: tasks-control-strip / inline-size;
+}
+
+@container tasks-control-strip (max-width: 540px) {
+  .tasks-top-row {
+    flex-wrap: wrap;
+  }
+
+  .tasks-filter-row {
+    flex: 1 1 100%;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    min-width: 0;
+    width: 100%;
+  }
+
+  .tasks-filter-select {
+    flex: 1 1 8.5rem;
+    min-width: 0;
+  }
+
+  .tasks-filter-select [data-slot="select-trigger"] {
+    max-width: none !important;
+    width: 100%;
+  }
+}
+
+/* Projects pane controls and summary adapt to the resizable index pane. */
+.claudesk-projects-pane {
+  container: claudesk-projects-pane / inline-size;
+}
+
+@container claudesk-projects-pane (min-width: 560px) {
+  .projects-control-grid {
+    grid-template-columns: minmax(0, 1fr) minmax(8rem, 10rem) minmax(7.5rem, 9rem);
+  }
+}
+
+@container claudesk-projects-pane (max-width: 559px) {
+  .projects-control-select [data-slot="select-trigger"] {
+    max-width: none !important;
+    width: 100%;
+  }
+}
+
+@container claudesk-projects-pane (min-width: 720px) {
+  .projects-summary {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .projects-summary > *:nth-child(2) {
+    border-right-width: 1px;
+  }
+
+  .projects-summary > *:nth-child(n + 3) {
+    border-top-width: 0;
+  }
+}
+
+/* Project overview adapts to the workspace pane width. */
+.claudesk-project-overview {
+  container: claudesk-project-overview / inline-size;
+  min-width: 0;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+}
+
+.claudesk-project-overview > *,
+.project-overview-state-strip,
+.project-overview-main-grid,
+.project-overview-bottom-grid {
+  min-width: 0;
+  max-width: 100%;
+}
+
+.claudesk-project-overview [data-slot="badge"] {
+  max-width: 100%;
+}
+
+.project-overview-state-strip,
+.project-overview-main-grid,
+.project-overview-bottom-grid {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.project-overview-working-summary-row {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.project-overview-state-cell {
+  border-bottom: 1px solid var(--color-border);
+}
+
+.project-overview-state-cell:last-child {
+  border-bottom-width: 0;
+}
+
+@container claudesk-project-overview (min-width: 420px) {
+  .project-overview-ledger-row {
+    grid-template-columns: 8.5rem minmax(0, 1fr);
+  }
+
+  .project-overview-ledger-label {
+    border-right: 1px solid var(--color-border);
+  }
+}
+
+@container claudesk-project-overview (min-width: 520px) {
+  .project-overview-working-summary-row {
+    grid-template-columns: 9rem minmax(0, 1fr);
+    column-gap: 0.75rem;
+  }
+}
+
+@container claudesk-project-overview (min-width: 780px) {
+  .project-overview-state-strip {
+    grid-template-columns: minmax(0, 1.05fr) minmax(0, 1.25fr) minmax(0, 1fr);
+  }
+
+  .project-overview-state-cell {
+    border-bottom-width: 0;
+    border-right: 1px solid var(--color-border);
+  }
+
+  .project-overview-state-cell:last-child {
+    border-right-width: 0;
+  }
+}
+
+@container claudesk-project-overview (min-width: 900px) {
+  .project-overview-main-grid {
+    grid-template-columns: minmax(0, 1fr) 22rem;
+  }
+
+  .project-overview-bottom-grid {
+    grid-template-columns: minmax(0, 1.1fr) minmax(20rem, 0.9fr);
+  }
+}

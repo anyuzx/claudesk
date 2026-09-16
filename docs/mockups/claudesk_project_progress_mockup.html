@@ -1,0 +1,822 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Claudesk — Project Progress Mockup</title>
+  <style>
+    :root {
+      --bg: #f7f7f4;
+      --surface: #fbfbf8;
+      --surface-subtle: #f0f0ec;
+      --surface-raised: #ffffff;
+      --border: #d9d8d2;
+      --border-strong: #b9b8b0;
+      --text: #22251f;
+      --text-soft: #555a52;
+      --text-muted: #80857d;
+      --text-faint: #a1a69e;
+      --active: #334155;
+      --done: #47735c;
+      --done-bg: #edf5ef;
+      --warning: #9a6a1f;
+      --warning-bg: #f7f0df;
+      --blocked: #9a3f3f;
+      --blocked-bg: #f6e7e5;
+      --ready: #6f5b28;
+      --ready-bg: #f2ecd9;
+      --open-bg: #edf0ef;
+      --radius-sm: 3px;
+      --radius-md: 5px;
+      --font-ui: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      --font-mono: "IBM Plex Mono", "SFMono-Regular", Consolas, monospace;
+      --row-h: 44px;
+    }
+
+    [data-theme="dark"] {
+      --bg: #151613;
+      --surface: #1b1c18;
+      --surface-subtle: #22231f;
+      --surface-raised: #1e1f1b;
+      --border: #34362f;
+      --border-strong: #4c4f45;
+      --text: #ecece5;
+      --text-soft: #c0c3b8;
+      --text-muted: #8f9488;
+      --text-faint: #696f64;
+      --active: #cbd5e1;
+      --done: #8db99d;
+      --done-bg: #1d2a22;
+      --warning: #c89b4d;
+      --warning-bg: #2c2516;
+      --blocked: #d0837f;
+      --blocked-bg: #301d1d;
+      --ready: #c1a755;
+      --ready-bg: #2a2517;
+      --open-bg: #262923;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font-ui);
+      font-size: 13px;
+      line-height: 1.35;
+      letter-spacing: -0.005em;
+    }
+
+    button {
+      font: inherit;
+      color: inherit;
+      background: transparent;
+      border: 0;
+      padding: 0;
+      cursor: pointer;
+    }
+
+    .app-pane {
+      width: min(1280px, 100vw);
+      margin: 0 auto;
+      padding: 12px 10px 20px;
+    }
+
+    .project-header {
+      display: grid;
+      grid-template-columns: minmax(320px, 1fr) auto;
+      gap: 16px;
+      align-items: start;
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .eyebrow {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--text-muted);
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+
+    .status-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--done);
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 22px;
+      line-height: 1.12;
+      font-weight: 620;
+      letter-spacing: -0.035em;
+    }
+
+    .project-description {
+      max-width: 740px;
+      margin: 8px 0 0;
+      color: var(--text-soft);
+      font-size: 13px;
+    }
+
+    .project-actions {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+      justify-content: flex-end;
+      padding-top: 4px;
+    }
+
+    .btn {
+      height: 28px;
+      padding: 0 10px;
+      border: 1px solid var(--border-strong);
+      border-radius: var(--radius-sm);
+      background: var(--surface);
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    .btn:hover { background: var(--surface-subtle); }
+
+    .tabs {
+      display: flex;
+      gap: 22px;
+      align-items: center;
+      height: 42px;
+      border-bottom: 1px solid var(--border);
+      overflow-x: auto;
+    }
+
+    .tab {
+      height: 42px;
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      color: var(--text-muted);
+      border-bottom: 2px solid transparent;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: 0.09em;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    .tab.is-active {
+      color: var(--text);
+      border-bottom-color: var(--text);
+    }
+
+    .count {
+      min-width: 18px;
+      height: 18px;
+      padding: 0 5px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 999px;
+      background: var(--surface-subtle);
+      color: var(--text-muted);
+      font-size: 10px;
+      letter-spacing: 0;
+    }
+
+    .progress-strip {
+      display: grid;
+      grid-template-columns: 220px minmax(220px, 1fr) minmax(300px, 1.3fr) 150px;
+      border-bottom: 1px solid var(--border);
+      background: var(--surface);
+    }
+
+    .summary-cell {
+      min-height: 74px;
+      padding: 12px 14px;
+      border-right: 1px solid var(--border);
+    }
+
+    .summary-cell:last-child { border-right: 0; }
+
+    .label {
+      margin-bottom: 6px;
+      color: var(--text-muted);
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .metric {
+      display: flex;
+      align-items: baseline;
+      gap: 6px;
+      font-family: var(--font-mono);
+      letter-spacing: 0.02em;
+    }
+
+    .metric strong {
+      font-family: var(--font-ui);
+      font-size: 24px;
+      font-weight: 640;
+      letter-spacing: -0.04em;
+    }
+
+    .metric span { color: var(--text-muted); }
+
+    .bar {
+      height: 4px;
+      margin-top: 8px;
+      background: var(--surface-subtle);
+      border: 1px solid var(--border);
+    }
+
+    .bar-fill {
+      width: 25%;
+      height: 100%;
+      background: var(--done);
+    }
+
+    .next-title {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      font-weight: 620;
+    }
+
+    .next-title span:first-child {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .summary-text {
+      color: var(--text-soft);
+      font-size: 12px;
+      max-width: 660px;
+    }
+
+    .summary-flags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+      margin-top: 9px;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      height: 20px;
+      padding: 0 7px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      color: var(--text-muted);
+      background: var(--surface-subtle);
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    .pill.done { color: var(--done); background: var(--done-bg); border-color: color-mix(in srgb, var(--done), var(--border) 55%); }
+    .pill.warning { color: var(--warning); background: var(--warning-bg); border-color: color-mix(in srgb, var(--warning), var(--border) 55%); }
+    .pill.blocked { color: var(--blocked); background: var(--blocked-bg); border-color: color-mix(in srgb, var(--blocked), var(--border) 50%); }
+    .pill.ready { color: var(--ready); background: var(--ready-bg); border-color: color-mix(in srgb, var(--ready), var(--border) 55%); }
+
+    .section-header {
+      display: grid;
+      grid-template-columns: 28px 42px 1.2fr 112px 126px 118px 110px 104px;
+      gap: 0;
+      align-items: center;
+      height: 31px;
+      padding: 0 8px;
+      color: var(--text-muted);
+      border-bottom: 1px solid var(--border);
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .section-title-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      height: 44px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .section-title {
+      color: var(--text);
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: 0.09em;
+      text-transform: uppercase;
+    }
+
+    .milestone-list {
+      border-bottom: 1px solid var(--border);
+    }
+
+    .milestone {
+      border-bottom: 1px solid var(--border);
+      background: var(--surface);
+    }
+
+    .milestone:last-child { border-bottom: 0; }
+
+    .milestone-row {
+      display: grid;
+      grid-template-columns: 28px 42px 1.2fr 112px 126px 118px 110px 104px;
+      align-items: center;
+      min-height: var(--row-h);
+      padding: 0 8px;
+    }
+
+    .milestone.is-expanded .milestone-row {
+      background: var(--surface-raised);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .chev {
+      width: 20px;
+      height: 20px;
+      display: grid;
+      place-items: center;
+      color: var(--text-muted);
+      font-size: 15px;
+    }
+
+    .index {
+      color: var(--text-muted);
+      font-family: var(--font-mono);
+      font-size: 11px;
+    }
+
+    .title-wrap {
+      min-width: 0;
+      padding-right: 16px;
+    }
+
+    .milestone-title {
+      font-weight: 620;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .milestone-subtitle {
+      margin-top: 2px;
+      color: var(--text-muted);
+      font-size: 12px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .mono-value {
+      color: var(--text-muted);
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: 0.02em;
+    }
+
+    .task-progress {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-family: var(--font-mono);
+      color: var(--text-muted);
+      font-size: 11px;
+    }
+
+    .mini-track {
+      width: 42px;
+      height: 3px;
+      background: var(--surface-subtle);
+      border: 1px solid var(--border);
+    }
+
+    .mini-fill {
+      height: 100%;
+      background: var(--done);
+    }
+
+    .actions {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 3px;
+    }
+
+    .icon-btn {
+      width: 25px;
+      height: 25px;
+      display: grid;
+      place-items: center;
+      border-radius: var(--radius-sm);
+      color: var(--text-muted);
+      font-size: 14px;
+    }
+
+    .icon-btn:hover {
+      background: var(--surface-subtle);
+      color: var(--text);
+    }
+
+    .expanded {
+      display: grid;
+      grid-template-columns: 70px minmax(260px, 0.9fr) minmax(260px, 1fr) minmax(320px, 1.1fr) 104px;
+      gap: 16px;
+      padding: 14px 8px 16px;
+      background: var(--surface);
+    }
+
+    .expanded .spacer { grid-column: 1; }
+
+    .panel-title {
+      margin-bottom: 8px;
+      color: var(--text-muted);
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .body-text {
+      color: var(--text-soft);
+      font-size: 12px;
+      max-width: 52ch;
+    }
+
+    .criteria-list,
+    .task-list {
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .criteria-list li {
+      position: relative;
+      padding-left: 15px;
+      margin-bottom: 6px;
+      color: var(--text-soft);
+      font-size: 12px;
+    }
+
+    .criteria-list li::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 0.68em;
+      width: 6px;
+      height: 1px;
+      background: var(--text-muted);
+    }
+
+    .task-item {
+      display: grid;
+      grid-template-columns: 18px 1fr auto;
+      gap: 8px;
+      align-items: start;
+      padding: 7px 0;
+      border-top: 1px solid var(--border);
+    }
+
+    .task-item:first-child { border-top: 0; padding-top: 0; }
+
+    .checkbox {
+      width: 13px;
+      height: 13px;
+      margin-top: 2px;
+      border: 1px solid var(--border-strong);
+      background: var(--surface-raised);
+    }
+
+    .checkbox.done {
+      background: var(--done-bg);
+      border-color: var(--done);
+      position: relative;
+    }
+
+    .checkbox.done::after {
+      content: "";
+      position: absolute;
+      left: 3px;
+      top: 1px;
+      width: 5px;
+      height: 8px;
+      border: solid var(--done);
+      border-width: 0 1px 1px 0;
+      transform: rotate(45deg);
+    }
+
+    .task-text { font-size: 12px; color: var(--text); }
+    .task-meta { margin-top: 4px; display: flex; gap: 5px; flex-wrap: wrap; }
+
+    .link-row {
+      margin-top: 10px;
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .text-link {
+      color: var(--text-soft);
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      border-bottom: 1px solid var(--border-strong);
+    }
+
+    .unassigned {
+      margin-top: 20px;
+      border-top: 1px solid var(--border);
+    }
+
+    .task-table-header,
+    .unassigned-task {
+      display: grid;
+      grid-template-columns: minmax(260px, 1fr) 98px 98px 108px 90px;
+      align-items: center;
+      column-gap: 12px;
+      padding: 0 8px;
+    }
+
+    .task-table-header {
+      height: 31px;
+      color: var(--text-muted);
+      border-bottom: 1px solid var(--border);
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .unassigned-task {
+      min-height: 38px;
+      border-bottom: 1px solid var(--border);
+      background: var(--surface);
+    }
+
+    .unassigned-task .actions { justify-content: flex-start; }
+
+    @media (max-width: 960px) {
+      .progress-strip { grid-template-columns: 1fr 1fr; }
+      .summary-cell:nth-child(2) { border-right: 0; }
+      .summary-cell:nth-child(3), .summary-cell:nth-child(4) { border-top: 1px solid var(--border); }
+      .section-header { display: none; }
+      .milestone-row {
+        grid-template-columns: 28px 34px minmax(180px, 1fr) auto;
+        grid-template-areas:
+          "chev index title actions"
+          ". . status status";
+        row-gap: 5px;
+        padding: 9px 8px;
+      }
+      .chev { grid-area: chev; }
+      .index { grid-area: index; }
+      .title-wrap { grid-area: title; }
+      .milestone-row > .pill:nth-of-type(1) { grid-area: status; justify-self: start; }
+      .milestone-row > .pill:nth-of-type(2),
+      .milestone-row > .mono-value,
+      .milestone-row > .task-progress { display: none; }
+      .actions { grid-area: actions; }
+      .expanded { grid-template-columns: 1fr; padding-left: 42px; }
+      .expanded .spacer { display: none; }
+      .task-table-header { display: none; }
+      .unassigned-task { grid-template-columns: 1fr auto; grid-template-areas: "title actions" "status status"; row-gap: 5px; padding: 8px; }
+      .unassigned-task > strong { grid-area: title; }
+      .unassigned-task > .pill,
+      .unassigned-task > .mono-value { grid-area: status; justify-self: start; margin-right: 5px; }
+      .unassigned-task .actions { grid-area: actions; }
+    }
+  </style>
+</head>
+<body>
+  <main class="app-pane" data-theme="light">
+    <header class="project-header">
+      <div>
+        <div class="eyebrow"><span class="status-dot"></span> Active <span>Updated 2026-05-15</span></div>
+        <h1>Test Project</h1>
+        <p class="project-description">Build a reproducible research pipeline that connects experimental data, polymer simulation, and manuscript development.</p>
+      </div>
+      <div class="project-actions" aria-label="Project actions">
+        <button class="btn">Create milestone</button>
+        <button class="btn">Create task</button>
+      </div>
+    </header>
+
+    <nav class="tabs" aria-label="Project tabs">
+      <button class="tab">Overview</button>
+      <button class="tab is-active">Progress <span class="count">4</span></button>
+      <button class="tab">Papers <span class="count">0</span></button>
+      <button class="tab">Notes <span class="count">0</span></button>
+      <button class="tab">Tasks <span class="count">7</span></button>
+      <button class="tab">Log <span class="count">3</span></button>
+      <button class="tab">Chats <span class="count">1</span></button>
+      <button class="tab">Assets <span class="count">0</span></button>
+    </nav>
+
+    <section class="progress-strip" aria-label="Project progress summary">
+      <div class="summary-cell">
+        <div class="label">Milestone progress</div>
+        <div class="metric"><strong>1</strong><span>/ 4 complete</span></div>
+        <div class="bar" aria-hidden="true"><div class="bar-fill"></div></div>
+      </div>
+      <div class="summary-cell">
+        <div class="label">Next milestone</div>
+        <div class="next-title"><span>Collecting data</span><span class="pill warning">Due May 29</span></div>
+        <div class="summary-text">Training data collection is active; one validation task remains open.</div>
+      </div>
+      <div class="summary-cell">
+        <div class="label">Current state</div>
+        <div class="summary-text">Project is between data assembly and simulation setup. Main analysis is blocked until the first simulation batch is validated.</div>
+        <div class="summary-flags">
+          <span class="pill done">1 done</span>
+          <span class="pill warning">1 in progress</span>
+          <span class="pill blocked">1 blocked</span>
+          <span class="pill">5 open tasks</span>
+        </div>
+      </div>
+      <div class="summary-cell">
+        <div class="label">Open support work</div>
+        <div class="metric"><strong>5</strong><span>tasks</span></div>
+        <div class="summary-text">2 linked, 3 unassigned</div>
+      </div>
+    </section>
+
+    <section class="section-title-row" aria-label="Milestone list heading">
+      <div class="section-title">Milestones</div>
+      <button class="btn">+ Milestone</button>
+    </section>
+
+    <div class="section-header" aria-hidden="true">
+      <span></span><span>Order</span><span>Milestone</span><span>Status</span><span>Kind</span><span>Target</span><span>Tasks</span><span>Actions</span>
+    </div>
+
+    <section class="milestone-list" aria-label="Milestone list">
+      <article class="milestone is-expanded">
+        <div class="milestone-row">
+          <button class="chev" aria-label="Collapse Collecting data">⌄</button>
+          <div class="index">00</div>
+          <div class="title-wrap">
+            <div class="milestone-title">Collecting data</div>
+            <div class="milestone-subtitle">Collect experiment data for training and validation.</div>
+          </div>
+          <span class="pill warning">In progress</span>
+          <span class="pill">Data</span>
+          <span class="mono-value">2026-05-29</span>
+          <div class="task-progress"><span>1 / 2</span><div class="mini-track"><div class="mini-fill" style="width:50%"></div></div></div>
+          <div class="actions" aria-label="Milestone actions">
+            <button class="icon-btn" aria-label="Link task">↔</button>
+            <button class="icon-btn" aria-label="Edit milestone">✎</button>
+            <button class="icon-btn" aria-label="Delete milestone">⌫</button>
+          </div>
+        </div>
+        <div class="expanded">
+          <div class="spacer"></div>
+          <div>
+            <div class="panel-title">Description</div>
+            <div class="body-text">Assemble raw experimental data, verify file naming conventions, and produce a clean manifest that can be consumed by the simulation and model-training pipeline.</div>
+          </div>
+          <div>
+            <div class="panel-title">Acceptance criteria</div>
+            <ul class="criteria-list">
+              <li>All raw files are present and checksummed.</li>
+              <li>Metadata table includes sample, replicate, condition, and date.</li>
+              <li>At least one small training subset can be loaded without manual fixes.</li>
+            </ul>
+          </div>
+          <div>
+            <div class="panel-title">Linked tasks</div>
+            <ul class="task-list">
+              <li class="task-item">
+                <span class="checkbox done" aria-hidden="true"></span>
+                <div>
+                  <div class="task-text">Create raw-data manifest from experiment folder</div>
+                  <div class="task-meta"><span class="pill done">Done</span><span class="pill">Medium</span></div>
+                </div>
+                <span class="mono-value">May 18</span>
+              </li>
+              <li class="task-item">
+                <span class="checkbox" aria-hidden="true"></span>
+                <div>
+                  <div class="task-text">Validate schema against the training loader</div>
+                  <div class="task-meta"><span class="pill">Open</span><span class="pill warning">High</span></div>
+                </div>
+                <span class="mono-value">May 24</span>
+              </li>
+            </ul>
+            <div class="link-row"><button class="text-link">Link existing task</button><button class="text-link">Create linked task</button></div>
+          </div>
+          <div></div>
+        </div>
+      </article>
+
+      <article class="milestone">
+        <div class="milestone-row">
+          <button class="chev" aria-label="Expand Simulation">›</button>
+          <div class="index">01</div>
+          <div class="title-wrap">
+            <div class="milestone-title">Simulation</div>
+            <div class="milestone-subtitle">Run long polymer simulations after data manifest is stable.</div>
+          </div>
+          <span class="pill">Not started</span>
+          <span class="pill">Data</span>
+          <span class="mono-value">—</span>
+          <div class="task-progress"><span>0 / 2</span><div class="mini-track"><div class="mini-fill" style="width:0%"></div></div></div>
+          <div class="actions" aria-label="Milestone actions">
+            <button class="icon-btn" aria-label="Link task">↔</button>
+            <button class="icon-btn" aria-label="Edit milestone">✎</button>
+            <button class="icon-btn" aria-label="Delete milestone">⌫</button>
+          </div>
+        </div>
+      </article>
+
+      <article class="milestone">
+        <div class="milestone-row">
+          <button class="chev" aria-label="Expand Main analysis">›</button>
+          <div class="index">02</div>
+          <div class="title-wrap">
+            <div class="milestone-title">Main analysis</div>
+            <div class="milestone-subtitle">Estimate model outputs and compare simulated structures with target observables.</div>
+          </div>
+          <span class="pill blocked">Blocked</span>
+          <span class="pill">Analysis</span>
+          <span class="mono-value">—</span>
+          <div class="task-progress"><span>0 / 1</span><div class="mini-track"><div class="mini-fill" style="width:0%"></div></div></div>
+          <div class="actions" aria-label="Milestone actions">
+            <button class="icon-btn" aria-label="Link task">↔</button>
+            <button class="icon-btn" aria-label="Edit milestone">✎</button>
+            <button class="icon-btn" aria-label="Delete milestone">⌫</button>
+          </div>
+        </div>
+      </article>
+
+      <article class="milestone">
+        <div class="milestone-row">
+          <button class="chev" aria-label="Expand First draft">›</button>
+          <div class="index">03</div>
+          <div class="title-wrap">
+            <div class="milestone-title">First draft</div>
+            <div class="milestone-subtitle">Write the first complete manuscript draft around validated results.</div>
+          </div>
+          <span class="pill">Not started</span>
+          <span class="pill">Writing</span>
+          <span class="mono-value">—</span>
+          <div class="task-progress"><span>0 / 0</span><div class="mini-track"><div class="mini-fill" style="width:0%"></div></div></div>
+          <div class="actions" aria-label="Milestone actions">
+            <button class="icon-btn" aria-label="Link task">↔</button>
+            <button class="icon-btn" aria-label="Edit milestone">✎</button>
+            <button class="icon-btn" aria-label="Delete milestone">⌫</button>
+          </div>
+        </div>
+      </article>
+    </section>
+
+    <section class="unassigned" aria-label="Unassigned project tasks">
+      <div class="section-title-row">
+        <div class="section-title">Unassigned project tasks</div>
+        <div class="mono-value">3 tasks</div>
+      </div>
+      <div class="task-table-header" aria-hidden="true">
+        <span>Task</span><span>Status</span><span>Priority</span><span>Due</span><span>Actions</span>
+      </div>
+      <div class="unassigned-task">
+        <strong>Draft methods paragraph for data section</strong>
+        <span class="pill">Open</span>
+        <span class="pill">Medium</span>
+        <span class="mono-value">—</span>
+        <div class="actions"><button class="text-link">Assign</button></div>
+      </div>
+      <div class="unassigned-task">
+        <strong>Check whether file naming matches old simulation scripts</strong>
+        <span class="pill">Open</span>
+        <span class="pill warning">High</span>
+        <span class="mono-value">2026-05-30</span>
+        <div class="actions"><button class="text-link">Assign</button></div>
+      </div>
+      <div class="unassigned-task">
+        <strong>Collect references for simulation validation</strong>
+        <span class="pill done">Done</span>
+        <span class="pill">Low</span>
+        <span class="mono-value">2026-05-22</span>
+        <div class="actions"><button class="text-link">Assign</button></div>
+      </div>
+    </section>
+  </main>
+</body>
+</html>

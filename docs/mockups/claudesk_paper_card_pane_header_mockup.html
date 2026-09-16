@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Claudesk Digest Header Mockup</title>
+  <style>
+    :root {
+      --bg: #f7f7f4;
+      --surface: #fbfbf8;
+      --surface-subtle: #f0f0ec;
+      --surface-muted: #e8e8e2;
+      --border: #d8d8d1;
+      --border-strong: #b6b7ad;
+
+      --text: #20231f;
+      --text-soft: #4f554d;
+      --text-muted: #7a8177;
+      --text-faint: #9ba198;
+
+      --active: #20231f;
+      --accent: #9a650e;
+      --accent-bg: #f6efdf;
+      --success: #4c745d;
+      --success-bg: #edf5ef;
+      --warning: #9a650e;
+      --warning-bg: #f6efdf;
+
+      --focus: #20231f;
+
+      --font-ui: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      --font-mono: "IBM Plex Mono", "SFMono-Regular", Consolas, monospace;
+
+      --radius-sm: 3px;
+      --pane-w: 920px;
+    }
+
+    [data-theme="dark"] {
+      --bg: #151613;
+      --surface: #1b1c18;
+      --surface-subtle: #23241f;
+      --surface-muted: #2a2b25;
+      --border: #36382f;
+      --border-strong: #515448;
+
+      --text: #eeeee7;
+      --text-soft: #c2c5ba;
+      --text-muted: #92988c;
+      --text-faint: #6d7368;
+
+      --active: #d7dfeb;
+      --accent: #c99a4a;
+      --accent-bg: #302617;
+      --success: #8fb79e;
+      --success-bg: #1d2b23;
+      --warning: #c99a4a;
+      --warning-bg: #302617;
+
+      --focus: #d7dfeb;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: grid;
+      place-items: start center;
+      padding: 24px 12px;
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font-ui);
+      font-size: 13px;
+      line-height: 1.35;
+    }
+
+    button,
+    input,
+    select {
+      font: inherit;
+      color: inherit;
+    }
+
+    button {
+      border: 0;
+      padding: 0;
+      background: transparent;
+      cursor: pointer;
+    }
+
+    .mockup-note,
+    .implementation-note {
+      width: min(var(--pane-w), 100%);
+      color: var(--text-muted);
+    }
+
+    .mockup-note {
+      margin-bottom: 10px;
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+    }
+
+    .pane {
+      width: min(var(--pane-w), 100%);
+      background: var(--surface);
+      border: 1px solid var(--border);
+    }
+
+    .pane-header {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      align-items: center;
+      min-height: 44px;
+      padding: 0 10px 0 14px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .title-line {
+      display: flex;
+      align-items: baseline;
+      gap: 8px;
+      min-width: 0;
+    }
+
+    .nav-chevrons {
+      display: inline-flex;
+      gap: 2px;
+      margin-right: 4px;
+      color: var(--text-muted);
+      font-family: var(--font-mono);
+      font-size: 13px;
+    }
+
+    .kicker {
+      color: var(--text);
+      font-family: var(--font-mono);
+      font-size: 12px;
+      letter-spacing: 0.11em;
+      text-transform: uppercase;
+    }
+
+    .count {
+      color: var(--text-muted);
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+    }
+
+    .button,
+    .icon-button {
+      height: 28px;
+      border-radius: var(--radius-sm);
+      color: var(--text-soft);
+    }
+
+    .button {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 0 8px;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    .button.primary {
+      color: var(--accent);
+      background: var(--accent-bg);
+      border-color: color-mix(in srgb, var(--accent), var(--border) 55%);
+    }
+
+    .button:hover,
+    .button:focus-visible,
+    .icon-button:hover,
+    .icon-button:focus-visible {
+      outline: 0;
+      background: var(--surface-subtle);
+      border-color: var(--border-strong);
+      color: var(--text);
+    }
+
+    .icon-button {
+      width: 28px;
+      display: grid;
+      place-items: center;
+      border: 1px solid transparent;
+      font-size: 18px;
+      line-height: 1;
+    }
+
+    .controls {
+      display: grid;
+      grid-template-columns: minmax(180px, 1fr) 116px 104px 110px 112px auto;
+      gap: 8px;
+      align-items: center;
+      padding: 8px 10px;
+      border-bottom: 1px solid var(--border);
+      background: var(--surface-subtle);
+    }
+
+    .search-wrap {
+      position: relative;
+      min-width: 0;
+    }
+
+    .search-icon {
+      position: absolute;
+      left: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-muted);
+      font-size: 14px;
+      pointer-events: none;
+    }
+
+    .search {
+      width: 100%;
+      min-width: 0;
+      height: 30px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      background: var(--surface);
+      padding: 0 10px 0 31px;
+      color: var(--text);
+      font-size: 12px;
+    }
+
+    .search::placeholder { color: var(--text-muted); }
+
+    .select {
+      height: 30px;
+      min-width: 0;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      background: var(--surface);
+      padding: 0 22px 0 8px;
+      color: var(--text-soft);
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    .compact-toggle {
+      height: 30px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 0 8px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      background: var(--surface);
+      color: var(--text-soft);
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    .compact-toggle:hover,
+    .compact-toggle:focus-visible {
+      outline: 0;
+      border-color: var(--border-strong);
+      background: var(--surface-subtle);
+      color: var(--text);
+    }
+
+    .run-strip {
+      display: grid;
+      grid-template-columns: 1.15fr 0.85fr 0.8fr 0.95fr;
+      border-bottom: 1px solid var(--border);
+      background: var(--surface);
+    }
+
+    .run-cell {
+      min-height: 44px;
+      padding: 7px 10px;
+      border-right: 1px solid var(--border);
+    }
+
+    .run-cell:last-child { border-right: 0; }
+
+    .label {
+      margin-bottom: 2px;
+      color: var(--text-muted);
+      font-family: var(--font-mono);
+      font-size: 9px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .run-value {
+      min-width: 0;
+      color: var(--text);
+      font-family: var(--font-mono);
+      font-size: 12px;
+      letter-spacing: 0.03em;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .run-value .muted { color: var(--text-muted); }
+    .run-value .accent { color: var(--accent); }
+    .run-value .success { color: var(--success); }
+
+    .status-line {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 7px 10px;
+      border-bottom: 1px solid var(--border);
+      background: var(--surface-subtle);
+      color: var(--text-muted);
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+
+    .status-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--success);
+    }
+
+    .implementation-note {
+      margin-top: 10px;
+      font-size: 12px;
+      line-height: 1.45;
+    }
+
+    @media (max-width: 780px) {
+      .controls {
+        grid-template-columns: 1fr 1fr 1fr;
+      }
+
+      .controls .search-wrap {
+        grid-column: 1 / -1;
+      }
+
+      .run-strip {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .run-cell:nth-child(2) { border-right: 0; }
+
+      .run-cell:nth-child(3),
+      .run-cell:nth-child(4) {
+        border-top: 1px solid var(--border);
+      }
+    }
+
+    @media (max-width: 560px) {
+      .pane-header {
+        grid-template-columns: 1fr;
+        row-gap: 6px;
+        padding: 9px 10px;
+      }
+
+      .header-actions {
+        justify-content: space-between;
+      }
+
+      .controls {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .run-strip {
+        grid-template-columns: 1fr;
+      }
+
+      .run-cell {
+        border-right: 0;
+        border-top: 1px solid var(--border);
+      }
+
+      .run-cell:first-child {
+        border-top: 0;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="mockup-note">Digest header-only mockup · search/filter fields + last-run summary</div>
+
+  <main class="pane" data-theme="light" aria-label="Digest header mockup">
+    <header class="pane-header">
+      <div class="title-line">
+        <span class="nav-chevrons">›‹</span>
+        <span class="kicker">Digest</span>
+        <span class="count">12 papers</span>
+      </div>
+
+      <div class="header-actions">
+        <button class="button primary" aria-label="Fetch new papers">↻ Fetch new</button>
+        <button class="button" aria-label="Run digest scoring">Run digest</button>
+        <button class="icon-button" aria-label="Add paper">+</button>
+      </div>
+    </header>
+
+    <section class="controls" aria-label="Digest search and filters">
+      <div class="search-wrap">
+        <span class="search-icon">⌕</span>
+        <input class="search" type="search" placeholder="Search digest papers…" aria-label="Search digest papers" />
+      </div>
+
+      <select class="select" aria-label="Sort digest">
+        <option>Relevance</option>
+        <option>Date</option>
+        <option>Source</option>
+        <option>Status</option>
+      </select>
+
+      <select class="select" aria-label="Digest time window">
+        <option>7 days</option>
+        <option>14 days</option>
+        <option>30 days</option>
+        <option>All time</option>
+      </select>
+
+      <select class="select" aria-label="Digest source filter">
+        <option>All sources</option>
+        <option>bioRxiv</option>
+        <option>arXiv</option>
+        <option>PubMed</option>
+        <option>OpenAlex</option>
+      </select>
+
+      <select class="select" aria-label="Digest state filter">
+        <option>All states</option>
+        <option>New</option>
+        <option>Saved</option>
+        <option>Read</option>
+        <option>Dismissed</option>
+      </select>
+
+      <button class="compact-toggle" aria-pressed="false" aria-label="Toggle compact digest rows">▤ Expanded</button>
+    </section>
+
+    <section class="run-strip" aria-label="Digest last-run summary">
+      <div class="run-cell">
+        <div class="label">Last run</div>
+        <div class="run-value">May 16, 2026 · <span class="muted">60-day source scan</span></div>
+      </div>
+
+      <div class="run-cell">
+        <div class="label">Fetched</div>
+        <div class="run-value">2,718 <span class="muted">papers</span></div>
+      </div>
+
+      <div class="run-cell">
+        <div class="label">In digest</div>
+        <div class="run-value"><span class="accent">12</span> <span class="muted">triage items</span></div>
+      </div>
+
+      <div class="run-cell">
+        <div class="label">Sources</div>
+        <div class="run-value">arXiv · bioRxiv · PubMed · OpenAlex</div>
+      </div>
+    </section>
+
+    <section class="status-line" aria-label="Digest status">
+      <span class="status-dot" aria-hidden="true"></span>
+      Ready · sorted by relevance · showing new, saved, read, and dismissed papers
+    </section>
+  </main>
+
+  <p class="implementation-note">
+    This isolates the digest header surface: title/actions, search and filter controls, last-run summary, and a compact status line. The implementation should reuse existing pane header, select, search, button, and summary-strip primitives.
+  </p>
+</body>
+</html>
