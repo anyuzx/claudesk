@@ -2,6 +2,10 @@
 
 `claudesk` is a local-first personal research assistant for paper discovery, notes, tasks, project coordination, managed PDFs, and chat over local research memory.
 
+![Claudesk's main interface showing the paper digest, a paper workspace with linked notes and projects, and the chat panel](docs/images/claudesk-interface.png)
+
+*Discover papers, explore your research, and chat in one workspace. Shown with sample data.*
+
 Claudesk is beta software. The supported installation is from source on Linux; packaged desktop installers and a stable 1.0 API are not available. Keep a backup of your vault before updating.
 
 ## License
